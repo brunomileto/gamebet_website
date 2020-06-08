@@ -24,23 +24,23 @@
                 </div>
               </div>
             </div>
-
+            
             <ul class="navbar-nav align-items-lg-center ml-lg-auto">
 
               {% if current_user.is_authenticated %}
 
                 <li class="nav-item">
-                  <a class="nav-link nav-link-icon" href={{url_for('logout')}} data-toggle="tooltip"
-                     title="End Session for [{{ current_user.user }}]">
-                    <i class="fa fa-sign-out"></i> Logout
-                    <span class="nav-link-inner--text d-lg-none">Logout</span>
+                  <a class="nav-link nav-link-icon" href={{url_for('users_main_page')}} data-toggle="tooltip"
+                     title="Sala de Jogos de [{{ current_user.user }}]">
+                    <i class="fa fa-gamepad" aria-hidden="true"></i>  Sala de Jogos
+                    <span class="nav-link-inner--text d-lg-none"> Sala de Jogos</span>
                   </a>
                 </li>
 
               {% else %}
 
                 <li class="nav-item">
-                  <a class="nav-link nav-link-icon" href={{url_for('login')}} data-toggle="tooltip"
+                  <a class="nav-link nav-link-icon" href={{ url_for('login') }} data-toggle="tooltip" 
                      title="Authenticate">
                     <i class="fa fa-sign-in"></i> Login
                     <span class="nav-link-inner--text d-lg-none">Login</span>
@@ -48,7 +48,6 @@
                 </li>
  
               {% endif %}
-
             </ul>
           </div>
         </div>

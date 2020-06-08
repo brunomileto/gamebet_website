@@ -4,8 +4,9 @@ License: MIT
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from app import db
+from website.app import db
 from flask_login import UserMixin
+
 
 
 class User(UserMixin, db.Model):
@@ -32,7 +33,7 @@ class User(UserMixin, db.Model):
         self.birth_date = birth_date
 
     def __repr__(self):
-        return str(self.id) + ' - ' + str(self.username)
+        return str(self.id) + ' - ' + str(self.user)
 
     def save(self):
         # inject self into db session

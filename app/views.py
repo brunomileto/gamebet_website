@@ -8,12 +8,13 @@ Copyright (c) 2019 - present AppSeed.us
 import os
 
 # App modules
-from app import app, lm
-from app.forms import LoginForm, RegisterForm
-from app.models import User
+from website.app import app, lm
+from website.app.models.forms import LoginForm, RegisterForm, MatchesForm
+from website.app.models.models import User
 # Flask modules
 from flask import render_template, request, url_for, redirect, send_from_directory
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
+from website.app.models.user_data import user_session_data
 
 
 # provide login manager with load_user callback
@@ -26,7 +27,7 @@ def load_user(user_id):
 @app.route('/logout.html')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('home_page'))
 
 
 # Register a new username
@@ -61,7 +62,6 @@ def register():
             pw_hash = senha  # bc.generate_password_hash(password)
 
             user_instance = User(user, email, pw_hash, name, last_name, phone, cpf, birth_date)
-
             user_instance.save()
 
             msg = 'User created, please <a href="' + url_for('login') + '">login</a>'
@@ -96,7 +96,8 @@ def login():
             # if bc.check_password_hash(username.password, password):
             if user.password == password:
                 login_user(user)
-                return redirect(url_for('index'))
+                user_session_data(current_user.id)
+                return redirect(url_for('users_main_page'))
             else:
                 msg = "Wrong password. Please try again."
         else:
@@ -105,8 +106,31 @@ def login():
     return render_template('accounts/login.html', form=form, msg=msg)
 
 
+# Main Page
+@app.route('/')
+def home_page():
+    return render_template('pages/index.html')
+
+
 # App main route + generic routing
-@app.route('/', defaults={'path': 'index.html'})
+@app.route('/sala_jogos.html')
+def users_main_page():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+
+    content = None
+    form = MatchesForm(request.form)
+    return render_template('pages/game_room.html', form=form)
+    # try:
+    #     form = MatchesForm(request.form)
+    #     return render_template('pages/game_room.html', form=form)
+    #
+    #
+    # except:
+    #
+    #     return render_template('pages/error-404.html')
+
+
 @app.route('/<path>')
 def index(path):
     if not current_user.is_authenticated:
