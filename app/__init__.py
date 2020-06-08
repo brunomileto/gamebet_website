@@ -16,7 +16,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 
-app.config.from_object('website.app.configuration.Config')
+app.config.from_object('gamebet_website.app.configuration.Config')
 
 db = SQLAlchemy(app)  # flask-sqlalchemy
 bc = Bcrypt(app)  # flask-bcrypt
@@ -32,4 +32,4 @@ def initialize_database():
 
 
 # Import routing, models and Start the App
-from website.app import views, models
+from gamebet_website.app import views, models

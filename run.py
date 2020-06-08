@@ -4,4 +4,4 @@ License: MIT
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from website.app import app, db
+from gamebet_website.app import app, db

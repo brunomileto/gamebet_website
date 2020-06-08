@@ -4,7 +4,7 @@ License: MIT
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from website.app import db
+from gamebet_website.app import db
 from flask_login import UserMixin
 
 

@@ -8,13 +8,13 @@ Copyright (c) 2019 - present AppSeed.us
 import os
 
 # App modules
-from website.app import app, lm
-from website.app.models.forms import LoginForm, RegisterForm, MatchesForm
-from website.app.models.models import User
+from gamebet_website.app import app, lm
+from gamebet_website.app.models.forms import LoginForm, RegisterForm, MatchesForm
+from gamebet_website.app.models.models import User
 # Flask modules
 from flask import render_template, request, url_for, redirect, send_from_directory
 from flask_login import login_user, logout_user, current_user, login_required
-from website.app.models.user_data import user_session_data
+from gamebet_website.app.models.user_data import user_session_data
 
 
 # provide login manager with load_user callback
