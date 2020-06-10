@@ -20,23 +20,26 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     name = StringField('Name')
-    first_name = StringField('First_name', validators=[DataRequired()])
-    last_name = StringField('Last_name', validators=[DataRequired()])
-    phone = IntegerField('Phone', validators=[DataRequired()])
-    cpf = IntegerField('cpf', validators=[DataRequired()])
-    birth_date = StringField('Birth_date', validators=[DataRequired()])
+    # first_name = StringField('First_name', validators=[DataRequired()])
+    # last_name = StringField('Last_name', validators=[DataRequired()])
+    # phone = IntegerField('Phone', validators=[DataRequired()])
+    # cpf = IntegerField('cpf', validators=[DataRequired()])
+    # birth_date = StringField('Birth_date', validators=[DataRequired()])
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
 
 
 class MatchesForm(FlaskForm):
-    game_name = SelectField('game', choices=[(""), ('FIFA19'), ('FIFA20'), ('FIFA21')], validators=[DataRequired()])
-    platform = SelectField('platform', choices=[(""),('Xbox ONE'), ('Play Station 4')], validators=[DataRequired()])
-    bet_value = MyFloatField('bet_value', validators=[DataRequired()])
+    game_name = StringField('game')
+    platform = StringField('platform')
+    # game_name = SelectField('game', choices=[(""), ('FIFA19'), ('FIFA20'), ('FIFA21')])
+    # platform = SelectField('platform', choices=[(""),('Xbox ONE'), ('Play Station 4')])
+    bet_value = IntegerField('bet_value', validators=[DataRequired()])
     if str(platform) == 'PLAY STATION 4':
         game_tag = StringField('game_tag_psn', validators=[DataRequired()])
     else:
         game_tag = StringField('game_tag_xbox_live', validators=[DataRequired()])
     rules_comments = StringField('rules_comments', validators=[DataRequired()])
-    game_mode = SelectField('game_mode', choices=[(""), ('Elencos Online'), ('Ultimate Team')], validators=[DataRequired()])
+    # game_mode = SelectField('game_mode', choices=[(""), ('Elencos Online'), ('Ultimate Team')])
+    game_mode = StringField("game_mode")

@@ -1,0 +1,110 @@
+{% extends "layouts/default-fullscreen.html" %}
+
+{% block title %} Match Creation {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <main>
+    <section class="section section-shaped section-lg">
+      <div class="shape shape-style-1 bg-gradient-default">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="container pt-lg-md">
+        <div class="row justify-content-center">
+          <div class="col-lg-5">
+            <div class="card bg-secondary shadow border-0">
+              <div class="card-body px-lg-5 py-lg-5">
+                <div class="text-center text-muted mb-4">
+                  <small>
+
+                    {% if msg %}
+                      <span class="text-danger">{{ msg | safe }}</span>
+                    {% endif %}
+
+                  </small>
+                </div>
+
+                <form class="form" method="post" action="">
+
+                  {{ form.hidden_tag() }}
+
+                  <div class="form-group">
+                    <div class="input-group input-group-alternative mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                      </div>
+                      {{ form.game_name(class="form-control", placeholder="Nome do Jogo") }}
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="input-group input-group-alternative mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                      </div>
+                      {{ form.platform(class="form-control", placeholder="Plataforma") }}
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="input-group input-group-alternative mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                      </div>
+                      {{ form.bet_value(class="form-control", placeholder="Valor Aposta") }}
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="input-group input-group-alternative mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                      </div>
+                      {{ form.game_tag(class="form-control", placeholder="Game Tag") }}
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="input-group input-group-alternative mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                      </div>
+                      {{ form.rules_comments(class="form-control", placeholder = "Comentários/Regras") }}
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="input-group input-group-alternative">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                      </div>
+                      {{ form.game_mode(class="form-control", placeholder="Modo de Jogo") }}
+                    </div>
+                  </div>
+                  <div class="text-center">
+                    <button type="submit" name="match_creation" class="btn btn-primary mt-4">Criar</button>
+                  </div>
+                  <div class="text-center">
+                    <a href= {{url_for('users_main_page')}} class="btn btn-sm btn-default float-center">Procurar Partida</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

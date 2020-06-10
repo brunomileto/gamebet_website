@@ -82,101 +82,9 @@
             <!-- INSERT CONTENT HERE -->
             <div class="row justify-content-center">
                 <div class="card-profile-actions py-4 mt-lg-0">
-                  <button type="button" class="btn btn-block btn-default" data-toggle="modal" data-backdrop="false" data-target="#modal-form">Criar Disputa</button>
-                  <div class="modal fade" id="modal-form" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true">
-                    <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">
-                      <div class="modal-content">
-                        <div class="modal-body p-0">
-                          <div class="card bg-secondary shadow border-0">
-                            <div class="card-header bg-white pb-5">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                  <span aria-hidden="true">×</span>
-                                </button>
-                              <div class="text-muted text-center mt-6">
-                                <b>Criar Disputa</b>
-                              </div>
-                            </div>
-                          <div class="card-body px-lg-5 py-lg-5">
-                            <div class="text-center text-muted mb-4">
-                              <small>Or sign in with credentials</small>
-                            </div>
-                              <form class="form" method="post" action="">
-                                {{ form.hidden_tag() }}
-                                    <div class="form-group">
-                                        <div class="input-group input-group-alternative mb-3">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="ni ni-single-02"></i></span>
-                                            </div>
-                                                {{ form.game_name(class="form-control") }}
-                                        </div>
-                                    </div>
-                                                                    <div class="form-group">
-                                        <div class="input-group input-group-alternative mb-3">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="ni ni-single-02"></i></span>
-                                            </div>
-                                                {{ form.platform(class="form-control") }}
-                                        </div>
-                                    </div>
-                                                                    <div class="form-group">
-                                        <div class="input-group input-group-alternative mb-3">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="ni ni-single-02"></i></span>
-                                            </div>
-                                                {{ form.bet_value(class="form-control") }}
-                                        </div>
-                                    </div>
-                                                                    <div class="form-group">
-                                        <div class="input-group input-group-alternative mb-3">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="ni ni-single-02"></i></span>
-                                            </div>
-                                                {{ form.game_tag(class="form-control") }}
-                                        </div>
-                                    </div>
-                                                                    <div class="form-group">
-                                        <div class="input-group input-group-alternative mb-3">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="ni ni-single-02"></i></span>
-                                            </div>
-                                                {{ form.rules_comments(class="form-control") }}
-                                        </div>
-                                    </div>
-                                                                    <div class="form-group">
-                                        <div class="input-group input-group-alternative mb-3">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="ni ni-single-02"></i></span>
-                                            </div>
-                                                {{ form.game_mode(class="form-control") }}
-                                        </div>
-                                    </div>
-
-                                <div class="form-group">
-                                    <div class="input-group input-group-alternative">
-                                      <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
-                                      </div>
-                                      <input class="form-control" placeholder="Password" type="password">
-                                    </div>
-                                    <div class="custom-control custom-control-alternative custom-checkbox">
-                                      <input class="custom-control-input" id="customCheckLogin" type="checkbox">
-                                      <label class="custom-control-label" for="customCheckLogin">
-                                        <span>Remember me</span>
-                                      </label>
-                                    </div>
-                                    <div class="text-center">
-                                      <button type="button" class="btn btn-primary my-4">Sign in</button>
-                                    </div>
-                                </div>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                    <a href="#" class="btn btn-sm btn-default float-center">Procurar Partida</a>
-                    <a href="#" class="btn btn-sm btn-default float-right">Histórico</a>
+                    <a href={{url_for('match_creation')}} class="btn btn-sm btn-default float-center">Criar Partida</a>
+                    <!-- <a href="#" class="btn btn-sm btn-default float-center">Procurar Partida</a> -->
+                    <a href= {{url_for('search_results')}} class="btn btn-sm btn-default float-right">Histórico</a>
                 </div>
             </div>
             <div class="text-center mt-5">
@@ -186,14 +94,14 @@
               <div class="h6 font-weight-300">
                   {{ current_user.email }}
               </div>
-              <div class="h6 mt-4"><i class="ni business_briefcase-24 mr-2"></i>Solution Manager - Creative Tim Officer</div>
-              <div><i class="ni education_hat mr-2"></i>University of Computer Science</div>
+              <div class="h6 mt-4"><i class="ni business_briefcase-24 mr-2"></i>.</div>
+              <div><i class="ni education_hat mr-2"></i>.</div>
             </div>
             <div class="mt-5 py-5 border-top text-center">
               <div class="row justify-content-center">
                 <div class="col-lg-9">
-                  <p>An artist of considerable range, Ryan — the name taken by Melbourne-raised, Brooklyn-based Nick Murphy — writes, performs and records all of his own music, giving it a warm, intimate feel with a solid groove structure. An artist of considerable range.</p>
-                  <a href="#">Show more</a>
+                  <p>.</p>
+                  <a href="#">.</a>
                 </div>
               </div>
             </div>

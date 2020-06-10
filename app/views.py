@@ -7,14 +7,16 @@ Copyright (c) 2019 - present AppSeed.us
 # Python modules
 import os
 
+# Flask modules
+from flask import render_template, request, url_for, redirect, send_from_directory
+from flask_login import login_user, logout_user, current_user
+
 # App modules
 from gamebet_website.app import app, lm
 from gamebet_website.app.models.forms import LoginForm, RegisterForm, MatchesForm
-from gamebet_website.app.models.models import User
-# Flask modules
-from flask import render_template, request, url_for, redirect, send_from_directory
-from flask_login import login_user, logout_user, current_user, login_required
+from gamebet_website.app.models.models import User, Match
 from gamebet_website.app.models.user_data import user_session_data
+from gamebet_website.app.tebles import Results
 
 
 # provide login manager with load_user callback
@@ -45,11 +47,11 @@ def register():
         user = request.form.get('username', '', type=str)
         senha = request.form.get('password', '', type=str)
         email = request.form.get('email', '', type=str)
-        name = request.form.get('first_name', '', type=str)
-        last_name = request.form.get('last_name', '', type=str)
-        phone = request.form.get('phone', '', type=str)
-        cpf = request.form.get('cpf', '', type=str)
-        birth_date = request.form.get('birth_date', '', type=str)
+        name = ""
+        last_name = ""
+        phone = None
+        cpf = None
+        birth_date = None
         # filter User out of database through username
         user_instance = User.query.filter_by(user=user).first()
         # filter User out of database through username
@@ -119,8 +121,59 @@ def users_main_page():
         return redirect(url_for('login'))
 
     content = None
+
     form = MatchesForm(request.form)
-    return render_template('pages/game_room.html', form=form)
+    msg = None
+
+    return render_template('pages/game_room.html')
+    # try:
+    #     form = MatchesForm(request.form)
+    #     return render_template('pages/game_room.html', form=form)
+    #
+    #
+    # except:
+    #
+    #     return render_template('pages/error-404.html')
+
+
+@app.route('/match_creation.html', methods=['GET', 'POST'])
+def match_creation():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+
+    content = None
+
+    form = MatchesForm(request.form)
+    msg = None
+
+    if form.validate_on_submit():
+        print('sssssssssssss')
+        match_creator_id = current_user.id
+        competitor_id = None
+        game_name = request.form.get('game_name', type=str)
+        platform = request.form.get('platform', type=str)
+        bet_value = request.form.get('bet_value', type=int)
+        match_creator_gametag = request.form.get('game_tag', type=str)
+        competitor_gametag = None
+        rules_comments = request.form.get('rules_comments', type=str)
+        game_mode = request.form.get('game_mode', type=str)
+        match_creator_username = str(current_user.user)
+        competitor_username = None
+        match_status = 'Aguardando'
+
+        match_object = Match(match_creator_id, competitor_id, game_name, platform, bet_value, match_creator_gametag,
+                             competitor_gametag, rules_comments, rules_comments, game_mode, match_creator_username,
+                             competitor_username, match_status)
+        match_object.save()
+        matches_list = Match.query.filter_by(id=int(match_object.id)).first()
+        print(matches_list)
+        if matches_list:
+            msg = "Partida Criada com sucesso"
+            return redirect(url_for('users_main_page'))
+        else:
+            msg = 'Partida não foi criada, cheque as informações inseridas'
+    print(form.errors)
+    return render_template('pages/match_creation.html', form=form, msg=msg)
     # try:
     #     form = MatchesForm(request.form)
     #     return render_template('pages/game_room.html', form=form)
@@ -146,6 +199,15 @@ def index(path):
     except:
 
         return render_template('pages/error-404.html')
+
+
+@app.route('/results')
+def search_results():
+    results = []
+    available_matches = Match.query.filter_by(match_status='Aguardando')
+    table = Results(available_matches)
+    table.border = True
+    return render_template('/pages/results.html', table=table)
 
 
 # Return sitemap
