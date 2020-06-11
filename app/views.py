@@ -223,7 +223,7 @@ def confirm_accepted_match(id):
 def current_accepted_matches():
     current_match = Match.query.filter(
         or_(Match.match_creator_id == int(current_user.id), Match.competitor_id == int(current_user.id))).filter(
-        or_(Match.match_status == "Em Partida", Match.match_status == "Aguardando outro Usuário"))
+        or_(Match.match_status == "Em Partida", Match.match_status == "Aguardando"))
     table = ShowCurrentAcceptedMaches(current_match)
     table.border = True
     return render_template('/pages/current_accepted_matches.html', table=table)
@@ -269,7 +269,7 @@ def insert_results(id):
             check_results(int(current_match.id))
             return render_template(url_for('users_main_page'))
         else:
-            current_match.match_status = "Aguardando Outro Usuário"
+            current_match.match_status = "Aguardando"
             current_match.save()
         return redirect(url_for('users_main_page'))
     return render_template('pages/insert_results.html', form=form)
@@ -318,7 +318,7 @@ def insert_results(id):
 def user_historic():
     available_matches = Match.query.filter(or_(Match.match_creator_id == int(current_user.id),
                                                Match.competitor_id == int(current_user.id))).filter(
-        and_(Match.match_status != "Aguardando Outro Usuário", Match.match_status != "Aguardando",
+        and_(Match.match_status != "Aguardando", Match.match_status != "Aguardando",
             Match.match_status != "Em Análise", Match.match_status != "Em Partida"))
     table = ShowHistoric(available_matches)
     table.border = True
