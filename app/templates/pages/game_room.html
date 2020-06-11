@@ -83,8 +83,9 @@
             <div class="row justify-content-center">
                 <div class="card-profile-actions py-4 mt-lg-0">
                     <a href={{url_for('match_creation')}} class="btn btn-sm btn-default float-center">Criar Partida</a>
-                    <!-- <a href="#" class="btn btn-sm btn-default float-center">Procurar Partida</a> -->
-                    <a href= {{url_for('search_results')}} class="btn btn-sm btn-default float-right">Histórico</a>
+                    <a href= {{url_for('search_matches')}} class="btn btn-sm btn-default float-right">Procurar Partida</a>
+                    <a href={{url_for('user_historic')}} class="btn btn-sm btn-default float-center">Meu Histórico</a>
+                    <a href={{url_for('current_accepted_matches')}} class="btn btn-sm btn-default float-center">Partidas em Aberto</a>
                 </div>
             </div>
             <div class="text-center mt-5">

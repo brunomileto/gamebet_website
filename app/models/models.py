@@ -60,10 +60,20 @@ class Match(UserMixin, db.Model):
     match_creator_username = db.Column(db.String(120))
     competitor_username = db.Column(db.String(120))
     match_status = db.Column(db.String(12))
+    match_creator_match_result = db.Column(db.String(120))
+    match_creator_match_creator_goals = db.Column(db.Integer)
+    match_creator_competitor_goals = db.Column(db.Integer)
+    match_creator_print = db.Column(db.String(64))
+    competitor_match_result = db.Column(db.String(120))
+    competitor_match_creator_goals = db.Column(db.Integer)
+    competitor_competitor_goals = db.Column(db.Integer)
+    competitor_print = db.Column(db.String(64))
 
     def __init__(self, match_creator_id, competitor_id, game_name, platform, bet_value, match_creator_gametag,
                  competitor_gametag, comment, game_rules, game_mode, match_creator_username, competitor_username,
-                 match_status):
+                 match_status, match_creator_match_result, match_creator_match_creator_goals,
+                 match_creator_competitor_goals, match_creator_print, competitor_match_result,
+                 competitor_match_creator_goals, competitor_competitor_goals, competitor_print):
         self.match_creator_id = match_creator_id
         self.competitor_id = competitor_id
         self.game_name = game_name
@@ -77,6 +87,76 @@ class Match(UserMixin, db.Model):
         self.match_creator_username = match_creator_username
         self.competitor_username = competitor_username
         self.match_status = match_status
+        self.match_creator_match_result = match_creator_match_result
+        self.match_creator_match_creator_goals = match_creator_match_creator_goals
+        self.match_creator_competitor_goals = match_creator_competitor_goals
+        self.match_creator_print = match_creator_print
+        self.competitor_match_result = competitor_match_result
+        self.competitor_match_creator_goals = competitor_match_creator_goals
+        self.competitor_competitor_goals = competitor_competitor_goals
+        self.competitor_print = competitor_print
+
+    def __repr__(self):
+        return str(self.id) + ' - ' + str(self.match_creator_username)
+
+    def save(self):
+        # inject self into db session
+        db.session.add(self)
+
+        # commit change and save the object
+        db.session.commit()
+
+        return self
+
+
+class MatchChecker(UserMixin, db.Model):
+    __tablename__ = 'matches_checker'
+
+    id = db.Column(db.Integer, primary_key=True)
+    match_id = db.Column(db.Integer, unique=True)
+    game_name = db.Column(db.String(120))
+    match_creator_match_result = db.Column(db.String(120))
+    match_creator_match_creator_goals = db.Column(db.Integer)
+    match_creator_competitor_goals = db.Column(db.Integer)
+    match_creator_print = db.Column(db.String(64))
+    competitor_match_result = db.Column(db.String(120))
+    competitor_match_creator_goals = db.Column(db.Integer)
+    competitor_competitor_goals = db.Column(db.Integer)
+    competitor_print = db.Column(db.String(64))
+    bet_value = db.Column(db.Integer)
+    match_creator_gametag = db.Column(db.String(120))
+    competitor_gametag = db.Column(db.String(120))
+    comment = db.Column(db.String(250))
+    game_rules = db.Column(db.String(500))
+    match_creator_username = db.Column(db.String(120))
+    competitor_username = db.Column(db.String(120))
+    match_status = db.Column(db.String(12))
+
+    def __init__(self, match_id, game_name, bet_value, match_creator_gametag, competitor_gametag, comment, game_rules,
+                 match_creator_username, competitor_username, match_status,  match_creator_match_result,
+                 match_creator_match_creator_goals, match_creator_competitor_goals, match_creator_print,
+                 competitor_match_result, competitor_match_creator_goals,
+                 competitor_competitor_goals, competitor_print):
+
+        self.match_id = match_id
+        self.game_name = game_name
+        self.bet_value = bet_value
+        self.match_creator_gametag = match_creator_gametag
+        self.competitor_gametag = competitor_gametag
+        self.comment = comment
+        self.game_rules = game_rules
+        self.match_creator_username = match_creator_username
+        self.competitor_username = competitor_username
+        self.match_status = match_status
+        self.match_creator_match_result = match_creator_match_result
+        self.match_creator_match_creator_goals = match_creator_match_creator_goals
+        self.match_creator_competitor_goals = match_creator_competitor_goals
+        self.match_creator_print = match_creator_print
+        self.competitor_match_result = competitor_match_result
+        self.competitor_winner_goals = match_creator_match_creator_goals
+        self.competitor_match_creator_goals = competitor_match_creator_goals
+        self.competitor_competitor_goals = competitor_competitor_goals
+        self.competitor_print = competitor_print
 
     def __repr__(self):
         return str(self.id) + ' - ' + str(self.match_creator_username)
