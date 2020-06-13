@@ -1,0 +1,261 @@
+{% extends "layouts/default-fullscreen.html" %}
+
+{% block title %} Sala de Jogos {% endblock %}
+
+{% block content %}
+
+  <main class="profile-page">
+    <section class="section-profile-cover section-shaped my-0">
+      <!-- Circles background -->
+      <div class="shape shape-style-1 shape-primary alpha-4">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <!-- SVG separator -->
+      <div class="separator separator-bottom separator-skew">
+        <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg">
+          <polygon class="fill-white" points="2560 0 2560 100 0 100"></polygon>
+        </svg>
+      </div>
+    </section>
+    <section class="section">
+      <div class="container-fluid">
+        <div class="card shadow mt--300 " style="height: 80rem;">
+          <div class="px-4">
+            <div class="">
+              <div class="">
+                <div class="">
+                          <!-- Navbar primary -->
+                  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mt-4">
+                    <div class="container-fluid">
+                      <a class="navbar-brand" href={{url_for('game_room')}}>Sala de Jogos</a>
+                      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-primary" aria-controls="navbar-primary" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                      </button>
+                      <div class="collapse navbar-collapse" id="navbar-primary">
+                        <div class="navbar-collapse-header">
+                          <div class="row">
+                            <div class="col-6 collapse-brand">
+                              <a href="./index.html">
+                                <img alt="image" src="/static/assets/img/brand/white.png">
+                              </a>
+                            </div>
+                            <div class="col-6 collapse-close">
+                              <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-primary" aria-controls="navbar-primary" aria-expanded="false" aria-label="Toggle navigation">
+                                <span></span>
+                                <span></span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <ul class="navbar-nav ml-lg-auto">
+                          <li class="nav-item dropdown">
+                            <a class="nav-link" href="#" id="navbar-primary_dropdown_2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Perfil <span class="sr-only">(content)</span> </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-primary_dropdown_1">
+                              <a class="dropdown-item" href="#">Action</a>
+                              <a class="dropdown-item" href="#">Another action</a>
+                              <div class="dropdown-divider"></div>
+                              <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Carteira</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Caixa de Mensagens</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Ajuda</a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </nav>
+                </div>
+              </div>
+            </div>
+            <!-- INSERT CONTENT HERE -->
+            <div class="row justify-content-center">
+                <div class="card-profile-actions py-4 mt-lg-0">
+
+                    <a href={{url_for('match_creation')}} class="btn btn-primary">Criar Partida</a>
+                    <a href= {{url_for('find_match')}} class="btn btn-sm btn-default float-right">Procurar Partida</a>
+                    <a href={{url_for('match_history')}} class="btn btn-sm btn-default float-center">Meu Histórico</a>
+                    <a href={{url_for('current_matches')}} class="btn btn-sm btn-default float-center">Partidas em Aberto</a>
+                </div>
+            </div>
+            <div class="text-center mt-5">
+
+
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+                <link href="../../static/assets/css/fresh-bootstrap-table.css" rel="stylesheet" />
+
+                <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+                <link href="http://fonts.googleapis.com/css?family=Roboto:400,700,300" rel="stylesheet" type="text/css">
+
+                <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+                <link href="http://fonts.googleapis.com/css?family=Roboto:400,700,300" rel="stylesheet" type="text/css">
+
+                <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+                <script src="https://unpkg.com/bootstrap-table/dist/bootstrap-table.min.js"></script>
+
+
+                <div class="wrapper">
+                      <div class="container">
+                        <div class="row">
+                          <div class="col-md-8 col-md-offset-2">
+                            <div class="description">
+                              <h2>Fresh Bootstrap Table</h2>
+                            </div>
+
+                            <div class="fresh-table full-color-azure">
+                            <!--
+                              Available colors for the full background: full-color-blue, full-color-azure, full-color-green, full-color-red, full-color-orange
+                              Available colors only for the toolbar: toolbar-color-blue, toolbar-color-azure, toolbar-color-green, toolbar-color-red, toolbar-color-orange
+                            -->
+
+                        <table id="fresh-table" class="table">
+
+                          <thead>
+                          <tr>
+                            <th data-field="id">ID</th>
+                            <th data-field="name" data-sortable="true">Username</th>
+                            <th data-field="salary" data-sortable="true">Status</th>
+                            <th data-field="country" data-sortable="true">Competitor</th>
+                            <th data-field="city">Platform</th>
+
+                            <th data-field="actions" >Actions</th>
+                          </tr>
+                          </thead>
+                            <tbody>
+
+                              {% for i in aaa %}
+                              <tr>
+                            <td>{{ i.id }}</td>
+                            <td>{{ i.match_creator_username}}</td>
+                            <td>{{ i.match_status}}</td>
+                            <td>{{ i.competitor_username}}</td>
+                            <td>{{ i.platform}}</td>
+                            <td>
+                                <form action="{{ url_for('find_match') }}" method="POST">
+                                <input type="hidden" name="id" value="{{ i.id }}"/>
+                                <input type="submit" class="btn btn-xs btn-danger" value="Kill"/>
+                                </form>
+
+                            </td>
+                              </tr>
+
+                          {% endfor %}
+                          </tbody>
+
+                        </table>
+
+                            </div>
+
+                            <div class="description description-footer">
+                              <p>Copyright &copy; 2019 <a href="http://creative-tim.com">Creative Tim</a>, made with <i class="fa fa-heart ct-heart"></i> for a better web.</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                     <script type="text/javascript">
+                        var $table = $('#fresh-table')
+                        var $alertBtn = $('#alertBtn')
+
+
+                        window.operateEvents = {
+                          'click .like': function (e, value, row, index) {
+                            alert('You click like icon, row: ' + JSON.stringify(row))
+                            console.log(value, row, index)
+                          },
+                          'click .edit': function (e, value, row, index) {
+                            alert('You click edit icon, row: ' + JSON.stringify(row))
+                            console.log(value, row, index)
+                          },
+                          'click .remove': function (e, value, row, index) {
+                            $table.bootstrapTable('remove', {
+                              field: 'id',
+                              values: [row.id]
+                            })
+                          }
+                        }
+
+                        function operateFormatter(value, row, index) {
+                          return [
+                            '<a rel="tooltip" title="Like" class="table-action like" href="javascript:void(0)" title="Like">',
+                              '<i class="fa fa-heart"></i>',
+                            '</a>',
+                            '<a rel="tooltip" title="Edit" class="table-action edit" href="javascript:void(0)" title="Edit">',
+                              '<i class="fa fa-edit"></i>',
+                            '</a>',
+                            '<a rel="tooltip" title="Remove" class="table-action remove" href="javascript:void(0)" title="Remove">',
+                              '<i class="fa fa-remove"></i>',
+                            '</a>'
+                          ].join('')
+                        }
+
+                        $(function () {
+                          $table.bootstrapTable({
+
+                            classes: 'table table-hover table-striped',
+                            toolbar: '.toolbar',
+
+                            search: false,
+                            showRefresh: true,
+                            showToggle: false,
+                            showColumns: false,
+                            pagination: true,
+                            striped: true,
+                            sortable: false,
+                            pageSize: 8,
+                            pageList: [8, 10, 25, 50, 100],
+                            formatShowingRows: function (pageFrom, pageTo, totalRows) {
+                              return ''
+                            },
+                            formatRecordsPerPage: function (pageNumber) {
+                              return pageNumber + ' rows visible'
+                            }
+                          })
+
+                          $alertBtn.click(function () {
+                            alert('You pressed on Alert')
+                          })
+                        })
+
+
+
+                      </script>
+
+
+              <h3>
+                {{ current_user.user }}
+              </h3>
+              <div class="h6 font-weight-300">
+                  {{ current_user.email }}
+              </div>
+              <div class="h6 mt-4"><i class="ni business_briefcase-24 mr-2"></i>.</div>
+              <div><i class="ni education_hat mr-2"></i>.</div>
+            </div>
+            <div class="mt-5 py-5 border-top text-center">
+              <div class="row justify-content-center">
+                <div class="col-lg-9">
+                  <p>.</p>
+                  <a href="#">.</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+{% endblock content %}

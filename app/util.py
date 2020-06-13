@@ -46,12 +46,12 @@ def check_results(match_id):
         match_for_check.save()
 
 
-
 # build a Json response
 def response(data):
-    return app.response_class(response=json.dumps(data),
-                              status=200,
-                              mimetype='application/json')
+    return jsonify(data)
+    # return app.response_class(response=json.dumps(data),
+    #                           status=200,
+    #                           mimetype='application/json')
 
 
 def g_db_commit():
