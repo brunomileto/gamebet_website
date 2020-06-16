@@ -6,7 +6,7 @@ Copyright (c) 2019 - present AppSeed.us
 from flask_login import LoginManager
 from flask_wtf import FlaskForm
 from wtforms import StringField, RadioField, PasswordField, IntegerField, SelectField
-from wtforms.validators import Email, DataRequired
+from wtforms.validators import Email, DataRequired, InputRequired
 
 login_manager = LoginManager(),
 GAME_CHOICES = [('', "Escolha um jogo:"), ('1', 'FIFA19'), ('2', 'FIFA20'), ('3', 'FIFA21')]
@@ -48,6 +48,6 @@ class MatchCreationForm(FlaskForm):
 class InsertResults(FlaskForm):
     # match_result = StringField('match_result', validators=[DataRequired()])
     match_result = SelectField('match_result', choices=MATCH_RESULT_CHOICES, validators=[DataRequired()])
-    match_creator_goals = IntegerField('match_creator_goals', validators=[DataRequired()])
-    competitor_goals = IntegerField('competitor_goals', validators=[DataRequired()])
+    match_creator_goals = IntegerField('match_creator_goals', validators=[InputRequired()])
+    competitor_goals = IntegerField('competitor_goals', validators=[InputRequired()])
     print = StringField('print', validators=[DataRequired()])
