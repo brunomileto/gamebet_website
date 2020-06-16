@@ -15,7 +15,7 @@
         <span></span>
         <span></span>
         <span></span>
-        <span></span>
+        <span></span>2
         <span></span>
         <span></span>
       </div>
@@ -24,38 +24,9 @@
           <div class="col-lg-5">
             <div class="card bg-secondary shadow border-0">
               <div class="card-header bg-white pb-5">
-                <div class="text-muted text-center mb-3"><small>Sign up with</small></div>
-                <div class="text-center">
-                  <a href="#" class="btn btn-neutral btn-icon mr-4">
-                    <span class="btn-inner--icon">
-                      <img src="/static/assets/img/icons/common/github.svg" alt="image">
-                    </span>
-                    <span class="btn-inner--text">Github</span>
-                  </a>
-                  <a href="#" class="btn btn-neutral btn-icon">
-                    <span class="btn-inner--icon">
-                      <img src="/static/assets/img/icons/common/google.svg" alt="image">
-                    </span>
-                    <span class="btn-inner--text">Google</span>
-                  </a>
-                </div>
+                <div class="text-muted text-center mb-3"><big>Inserir Resultados da Partida</big></div>
               </div>
               <div class="card-body px-lg-5 py-lg-5">
-                <div class="text-center text-muted mb-4">
-                  <small>
-                    
-                    {% if msg %}
-                      <span class="text-danger">{{ msg | safe }}</span>
-                    {% else %}
-                      Add your credentials 
-                      <br />
-                      OR <a href={{ url_for('login') }} >authenticate</a> with an existing account.
-                    {% endif %} 
-
-                  </small>
-                </div>
-
-
                   <form class="form" method="post" action="">
                     {{ form.hidden_tag() }}
                   <div class="form-group">
@@ -63,7 +34,7 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="ni ni-email-83"></i></span>
                       </div>
-                      {{ form.match_result(class="form-control", placeholder ="Resultado Partida (V, E, D)") }}
+                      {{ form.match_result(class="form-control") }}
                     </div>
                   </div>
                   <div class="form-group">
@@ -91,30 +62,21 @@
                     </div>
                   </div>
 
-
-                  <div class="text-muted font-italic"><small>password strength: <span class="text-success font-weight-700">strong</span></small></div>
-                  <div class="row my-4">
+                    <div class="row my-4">
                     <div class="col-12">
-                      <div class="custom-control custom-control-alternative custom-checkbox">
-                        <input class="custom-control-input" id="customCheckRegister" type="checkbox">
-                        <label class="custom-control-label" for="customCheckRegister"><span>I agree with the <a href="#">Privacy Policy</a></span></label>
-                      </div>
                     </div>
                   </div>
                   <div class="text-center">
-                    <button type="submit" name="register" class="btn btn-primary mt-4">Register</button>
+                    <button type="submit" name="register" class="btn btn-primary mt-4">Inserir</button>
+                  </div>
+                    <div class="text-center">
+                    <a href= {{url_for('game_room')}} class="btn btn-primary mt-4">Votlar</a>
                   </div>
                 </form>
                 </form>
               </div>
             </div>
             <div class="row mt-3">
-                <div class="col-6">
-                  <a href={{ url_for('login') }} class="text-light"><small>Login</small></a>
-                </div>
-                <div class="col-6 text-right">
-                  <a href="https://appseed.us/support" class="text-light"><small>Get support</small></a>
-                </div>
             </div>            
           </div>
         </div>

@@ -14,10 +14,11 @@ from sqlalchemy import or_, and_
 
 # App modules
 from gamebet_website.app import app, lm
-from gamebet_website.app.models.forms import LoginForm, RegisterForm, MatchCreationForm, InsertResults
+from gamebet_website.app.models.forms import LoginForm, RegisterForm, MatchCreationForm, InsertResults, GAME_CHOICES, PLATFORM_CHOICES, BET_VALUE_CHOICES, RULES_CHOICES, GAME_MODE_CHOICES, MATCH_RESULT_CHOICES
 from gamebet_website.app.models.models import User, Match
 from gamebet_website.app.models.user_data import user_session_data
-from gamebet_website.app.util import check_results
+from gamebet_website.app.util import check_results, send_email
+
 
 
 # provide login manager with load_user callback
@@ -146,13 +147,16 @@ def match_creation():
     if form.validate_on_submit():
         match_creator_id = current_user.id
         competitor_id = None
-        game_name = request.form.get('game_name', type=str)
-        platform = request.form.get('platform', type=str)
-        bet_value = request.form.get('bet_value', type=int)
+        game_name = dict(GAME_CHOICES).get(form.game_name.data)
+        platform = dict(PLATFORM_CHOICES).get(form.platform.data)
+        bet_value = dict(BET_VALUE_CHOICES).get(form.bet_value.data)
         match_creator_gametag = request.form.get('game_tag', type=str)
         competitor_gametag = None
-        rules_comments = request.form.get('rules_comments', type=str)
-        game_mode = request.form.get('game_mode', type=str)
+        comments = request.form.get('comments', type=str)
+        game_mode = dict(GAME_MODE_CHOICES).get(form.game_mode.data)
+        rules = dict(RULES_CHOICES).get(form.rules.data)
+        if rules == 'Escolha uma regra, se quiser:':
+            rules = None
         match_creator_username = str(current_user.user)
         competitor_username = None
         match_creator_match_result = None
@@ -165,13 +169,14 @@ def match_creation():
         competitor_print = None
         match_status = 'Procurando'
         match_object = Match(match_creator_id, competitor_id, game_name, platform, bet_value, match_creator_gametag,
-                             competitor_gametag, rules_comments, rules_comments, game_mode, match_creator_username,
+                             competitor_gametag, comments, rules, game_mode, match_creator_username,
                              competitor_username, match_status, match_creator_match_result,
                              match_creator_match_creator_goals, match_creator_competitor_goals, match_creator_print,
                              competitor_match_result, competitor_match_creator_goals, competitor_competitor_goals,
                              competitor_print)
         match_object.save()
         matches_list = Match.query.filter_by(id=int(match_object.id)).first()
+
         if matches_list:
             msg = "Partida Criada com sucesso"
             return redirect(url_for('game_room'))
@@ -252,7 +257,7 @@ def insert_results(id):
 
     if form.validate_on_submit():
         if int(current_user.id) == current_match.match_creator_id:
-            match_creator_match_result = request.form.get('match_result', type=str)
+            match_creator_match_result = dict(MATCH_RESULT_CHOICES).get(form.match_result.data)
             match_creator_match_creator_goals = request.form.get('match_creator_goals', type=int)
             match_creator_competitor_goals = request.form.get('competitor_goals', type=int)
             match_creator_print = request.form.get('print', type=str)
@@ -262,7 +267,7 @@ def insert_results(id):
             current_match.match_creator_print = match_creator_print
 
         elif int(current_user.id) == current_match.competitor_id:
-            competitor_match_result = request.form.get('match_result', type=str)
+            competitor_match_result = dict(MATCH_RESULT_CHOICES).get(form.match_result.data)
             competitor_competitor_goals = request.form.get('match_creator_goals', type=int)
             competitor_match_creator_goals = request.form.get('competitor_goals', type=int)
             competitor_print = request.form.get('print', type=str)
@@ -278,11 +283,20 @@ def insert_results(id):
             current_match.match_status = "Em Análise"
             current_match.save()
             check_results(int(current_match.id))
-            return redirect(url_for('game_room'))
+            return redirect(url_for('insert_results'))
+            print(form.errors)
+            print('HEEE')
+
         else:
             current_match.match_status = "Aguardando"
             current_match.save()
+        print(form.errors)
+        print('HEEE')
+
         return redirect(url_for('game_room'))
+    print(form.errors)
+    print('HEEE')
+
     return render_template('pages/insert_results.html', form=form)
 
 
