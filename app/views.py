@@ -39,6 +39,8 @@ def logout():
 def register():
     # declare the Registration Form
     form = RegisterForm(request.form)
+    print('heey')
+    print(form.errors)
     msg = None
     if request.method == 'GET':
         return render_template('accounts/register.html', form=form, msg=msg)
