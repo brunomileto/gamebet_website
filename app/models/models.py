@@ -20,9 +20,10 @@ class User(UserMixin, db.Model):
     phone = db.Column(db.BIGINT)
     cpf = db.Column(db.BIGINT, unique=True)
     birth_date = db.Column(db.Date)
+    wallet = db.Column(db.BIGINT)
     matches = db.relationship('Match', backref='match_creator')
 
-    def __init__(self, user, email, password, first_name, last_name, phone, cpf, birth_date):
+    def __init__(self, user, email, password, first_name, last_name, phone, cpf, birth_date, wallet):
         self.user = user
         self.password = password
         self.email = email
@@ -31,6 +32,7 @@ class User(UserMixin, db.Model):
         self.phone = phone
         self.cpf = cpf
         self.birth_date = birth_date
+        self.wallet = wallet
 
     def __repr__(self):
         return str(self.id) + ' - ' + str(self.user)
@@ -109,63 +111,80 @@ class Match(UserMixin, db.Model):
         return self
 
 
-class MatchChecker(UserMixin, db.Model):
-    __tablename__ = 'matches_checker'
+class Product(UserMixin, db.Model):
+    __tablename__ = 'products'
 
     id = db.Column(db.Integer, primary_key=True)
-    match_id = db.Column(db.Integer, unique=True)
-    game_name = db.Column(db.String(120))
-    match_creator_match_result = db.Column(db.String(120))
-    match_creator_match_creator_goals = db.Column(db.Integer)
-    match_creator_competitor_goals = db.Column(db.Integer)
-    match_creator_print = db.Column(db.String(64))
-    competitor_match_result = db.Column(db.String(120))
-    competitor_match_creator_goals = db.Column(db.Integer)
-    competitor_competitor_goals = db.Column(db.Integer)
-    competitor_print = db.Column(db.String(64))
-    bet_value = db.Column(db.Integer)
-    match_creator_gametag = db.Column(db.String(120))
-    competitor_gametag = db.Column(db.String(120))
-    comment = db.Column(db.String(250))
-    game_rules = db.Column(db.String(500))
-    match_creator_username = db.Column(db.String(120))
-    competitor_username = db.Column(db.String(120))
-    match_status = db.Column(db.String(12))
+    product_name = db.Column(db.String(120), unique=True)
+    product_value = db.Column(db.Integer)
 
-    def __init__(self, match_id, game_name, bet_value, match_creator_gametag, competitor_gametag, comment, game_rules,
-                 match_creator_username, competitor_username, match_status,  match_creator_match_result,
-                 match_creator_match_creator_goals, match_creator_competitor_goals, match_creator_print,
-                 competitor_match_result, competitor_match_creator_goals,
-                 competitor_competitor_goals, competitor_print):
-
-        self.match_id = match_id
-        self.game_name = game_name
-        self.bet_value = bet_value
-        self.match_creator_gametag = match_creator_gametag
-        self.competitor_gametag = competitor_gametag
-        self.comment = comment
-        self.game_rules = game_rules
-        self.match_creator_username = match_creator_username
-        self.competitor_username = competitor_username
-        self.match_status = match_status
-        self.match_creator_match_result = match_creator_match_result
-        self.match_creator_match_creator_goals = match_creator_match_creator_goals
-        self.match_creator_competitor_goals = match_creator_competitor_goals
-        self.match_creator_print = match_creator_print
-        self.competitor_match_result = competitor_match_result
-        self.competitor_winner_goals = match_creator_match_creator_goals
-        self.competitor_match_creator_goals = competitor_match_creator_goals
-        self.competitor_competitor_goals = competitor_competitor_goals
-        self.competitor_print = competitor_print
+    def __init__(self, product_name, product_value, user_id):
+        self.product_name = product_name
+        self.product_value = product_value
 
     def __repr__(self):
-        return str(self.id) + ' - ' + str(self.match_creator_username)
+        return str(self.id) + ' - ' + str(self.product_name)
 
     def save(self):
         # inject self into db session
         db.session.add(self)
 
         # commit change and save the object
+        db.session.commit()
+
+        return self
+
+
+class Sale(UserMixin, db.Model):
+    __tablename__ = 'sales'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer)
+    product_name = db.Column(db.String(120))
+    product_value = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
+    user_username = db.Column(db.String(120))
+    collection_id = db.Column(db.String(240), unique=True)
+    collection_status = db.Column(db.String(120))
+    payment_type = db.Column(db.String(120))
+    merchant_order_id = db.Column(db.String(240), unique=True)
+    preference_id = db.Column(db.String(240), unique=True)
+    site_id = db.Column(db.String(64))
+    processing_mode = db.Column(db.String(120))
+    sale_date = db.Column(db.DateTime)
+
+    def __init__(self, preference_id, product_id=None, product_name=None, product_value=None, user_id=None,
+                 user_username=None, collection_id=None, collection_status=None,
+                 payment_type=None, merchant_order_id=None, site_id=None, processing_mode=None, sale_date=None):
+        self.product_id = product_id
+        self.product_name = product_name
+        self.product_value = product_value
+        self.user_id = user_id
+        self.user_username = user_username
+        self.collection_id = collection_id
+        self.collection_status = collection_status
+        self.payment_type = payment_type
+        self.merchant_order_id = merchant_order_id
+        self.preference_id = preference_id
+        self.site_id = site_id
+        self.processing_mode = processing_mode
+        self.sale_date = sale_date
+
+    def __repr__(self):
+        return str(self.id) + ' - ' + str(self.user_username)
+
+    def save(self):
+        # inject self into db session
+        db.session.add(self)
+
+        # commit change and save the object
+        db.session.commit()
+
+        return self
+
+    def delete(self):
+        db.session.delete(self)
+
         db.session.commit()
 
         return self

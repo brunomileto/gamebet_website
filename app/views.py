@@ -6,19 +6,23 @@ Copyright (c) 2019 - present AppSeed.us
 
 # Python modules
 import os
+import datetime
 
 # Flask modules
-from flask import render_template, request, url_for, redirect, send_from_directory
+import pprint
+
+from flask import render_template, request, url_for, redirect, send_from_directory, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 from sqlalchemy import or_, and_
 
 # App modules
 from gamebet_website.app import app, lm
-from gamebet_website.app.models.forms import LoginForm, RegisterForm, MatchCreationForm, InsertResults, GAME_CHOICES, PLATFORM_CHOICES, BET_VALUE_CHOICES, RULES_CHOICES, GAME_MODE_CHOICES, MATCH_RESULT_CHOICES
-from gamebet_website.app.models.models import User, Match
-from gamebet_website.app.models.user_data import user_session_data
+from gamebet_website.app.models.forms import LoginForm, RegisterForm, MatchCreationForm, InsertResults, GAME_CHOICES, \
+    PLATFORM_CHOICES, BET_VALUE_CHOICES, RULES_CHOICES, GAME_MODE_CHOICES, MATCH_RESULT_CHOICES
+from gamebet_website.app.models.models import User, Match, Product,Sale
 from gamebet_website.app.util import check_results, send_email
-
+from gamebet_website.app.mercadopago import mercadopago
+from urllib.parse import urlparse, parse_qs
 
 
 # provide login manager with load_user callback
@@ -101,7 +105,6 @@ def login():
             # if bc.check_password_hash(username.password, password):
             if user.password == password:
                 login_user(user)
-                user_session_data(current_user.id)
                 return redirect(url_for('game_room'))
             else:
                 msg = "Wrong password. Please try again."
@@ -118,14 +121,9 @@ def game_room():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
-    content = None
-
-    form = MatchCreationForm(request.form)
-    msg = None
 
     return render_template('pages/game_room.html')
     # try:
-    #     form = MatchCreationForm(request.form)
     #     return render_template('pages/game_room.html', form=form)
     #
     #
@@ -139,51 +137,59 @@ def game_room():
 def match_creation():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-
-    content = None
-
     form = MatchCreationForm(request.form)
     msg = None
+    current_user_wallet = User.query.filter_by(id=current_user.id).first()
+    if int(current_user_wallet.wallet) < 5:
+        msg = 'Você não possui saldo suficiente, compre mais créditos!'
+    else:
+        content = None
 
-    if form.validate_on_submit():
-        match_creator_id = current_user.id
-        competitor_id = None
-        game_name = dict(GAME_CHOICES).get(form.game_name.data)
-        platform = dict(PLATFORM_CHOICES).get(form.platform.data)
-        bet_value = dict(BET_VALUE_CHOICES).get(form.bet_value.data)
-        match_creator_gametag = request.form.get('game_tag', type=str)
-        competitor_gametag = None
-        comments = request.form.get('comments', type=str)
-        game_mode = dict(GAME_MODE_CHOICES).get(form.game_mode.data)
-        rules = dict(RULES_CHOICES).get(form.rules.data)
-        if rules == 'Escolha uma regra, se quiser:':
-            rules = None
-        match_creator_username = str(current_user.user)
-        competitor_username = None
-        match_creator_match_result = None
-        match_creator_match_creator_goals = None
-        match_creator_competitor_goals = None
-        match_creator_print = None
-        competitor_match_result = None
-        competitor_competitor_goals = None
-        competitor_match_creator_goals = None
-        competitor_print = None
-        match_status = 'Procurando'
-        match_object = Match(match_creator_id, competitor_id, game_name, platform, bet_value, match_creator_gametag,
-                             competitor_gametag, comments, rules, game_mode, match_creator_username,
-                             competitor_username, match_status, match_creator_match_result,
-                             match_creator_match_creator_goals, match_creator_competitor_goals, match_creator_print,
-                             competitor_match_result, competitor_match_creator_goals, competitor_competitor_goals,
-                             competitor_print)
-        match_object.save()
-        matches_list = Match.query.filter_by(id=int(match_object.id)).first()
 
-        if matches_list:
-            msg = "Partida Criada com sucesso"
-            return redirect(url_for('game_room'))
-        else:
-            msg = 'Partida não foi criada, cheque as informações inseridas'
-    print(form.errors)
+
+        if form.validate_on_submit():
+            bet_value = dict(BET_VALUE_CHOICES).get(form.bet_value.data)
+            if int(current_user_wallet.wallet) < int(bet_value):
+                msg = 'Você não possui saldo suficiente, escolha uma aposta de menor valor!'
+            else:
+                match_creator_id = current_user.id
+                competitor_id = None
+                game_name = dict(GAME_CHOICES).get(form.game_name.data)
+                platform = dict(PLATFORM_CHOICES).get(form.platform.data)
+                match_creator_gametag = request.form.get('game_tag', type=str)
+                competitor_gametag = None
+                comments = request.form.get('comments', type=str)
+                game_mode = dict(GAME_MODE_CHOICES).get(form.game_mode.data)
+                rules = dict(RULES_CHOICES).get(form.rules.data)
+                if rules == 'Escolha uma regra, se quiser:':
+                    rules = None
+                match_creator_username = str(current_user.user)
+                competitor_username = None
+                match_creator_match_result = None
+                match_creator_match_creator_goals = None
+                match_creator_competitor_goals = None
+                match_creator_print = None
+                competitor_match_result = None
+                competitor_competitor_goals = None
+                competitor_match_creator_goals = None
+                competitor_print = None
+                match_status = 'Procurando'
+                match_object = Match(match_creator_id, competitor_id, game_name, platform, bet_value, match_creator_gametag,
+                                     competitor_gametag, comments, rules, game_mode, match_creator_username,
+                                     competitor_username, match_status, match_creator_match_result,
+                                     match_creator_match_creator_goals, match_creator_competitor_goals, match_creator_print,
+                                     competitor_match_result, competitor_match_creator_goals, competitor_competitor_goals,
+                                     competitor_print)
+                match_object.save()
+                matches_list = Match.query.filter_by(id=int(match_object.id)).first()
+
+                if matches_list:
+                    current_user_wallet.wallet = int(current_user_wallet.wallet) - int(bet_value)
+                    current_user_wallet.save()
+                    msg = "Partida Criada com sucesso"
+                    return redirect(url_for('game_room'))
+                else:
+                    msg = 'Partida não foi criada, cheque as informações inseridas'
     return render_template('pages/match_creation.html', form=form, msg=msg)
     # try:
     #     form = MatchCreationForm(request.form)
@@ -200,9 +206,14 @@ def find_match():
     results = []
     available_matches = Match.query.filter_by(match_status='Procurando').filter(
         Match.match_creator_id != int(current_user.id))
+    get_user_wallet = User.query.filter_by(id=current_user.id).first()
     if request.method == 'POST':
         id = request.form['id']
-        return redirect(url_for('accept_match', id=id))
+        selected_match = Match.query.filter_by(id=id).first()
+        if int(get_user_wallet.wallet) < int(selected_match.bet_value):
+            return redirect(url_for('product_list'))
+        else:
+            return redirect(url_for('accept_match', id=id))
     return render_template('/pages/find_match.html', available_matches=available_matches)
 
 
@@ -211,8 +222,8 @@ def find_match():
 def accept_match(id):
     match_desired = Match.query.filter_by(id=id)
     if request.method == 'POST':
-        id = request.form['id']
-        redirect(url_for('confirm_accept_match', id=id))
+            id = request.form['id']
+            redirect(url_for('confirm_accept_match', id=id))
     return render_template('/pages/accept_match.html', match_desired=match_desired)
 
 
@@ -224,6 +235,9 @@ def confirm_accept_match(id):
     selected_match.competitor_username = current_user.user
     selected_match.match_status = "Em partida"
     selected_match.save()
+    competitor_wallet_update = User.query.filter_by(id=current_user.id).first()
+    competitor_wallet_update.wallet = int(competitor_wallet_update.wallet) - int(selected_match.bet_value)
+    competitor_wallet_update.save()
     matches = Match.query.filter(
         or_(Match.match_creator_id == int(current_user.id), Match.competitor_id == int(current_user.id))).filter(
         or_(Match.match_status == "Em Partida", Match.match_status == "Aguardando"))
@@ -285,18 +299,14 @@ def insert_results(id):
             current_match.save()
             check_results(int(current_match.id))
             return redirect(url_for('insert_results'))
-            print(form.errors)
-            print('HEEE')
+
 
         else:
             current_match.match_status = "Aguardando"
             current_match.save()
-        print(form.errors)
-        print('HEEE')
 
         return redirect(url_for('game_room'))
-    print(form.errors)
-    print('HEEE')
+
 
     return render_template('pages/insert_results.html', form=form)
 
@@ -305,11 +315,43 @@ def insert_results(id):
 @app.route('/historico_partidas.html')
 def match_history():
     matches = Match.query.filter(or_(Match.match_creator_id == int(current_user.id),
-                                               Match.competitor_id == int(current_user.id))).filter(
+                                     Match.competitor_id == int(current_user.id))).filter(
         and_(Match.match_status != "Procurando", Match.match_status != "Aguardando",
              Match.match_status != "Em Análise", Match.match_status != "Em Partida"))
 
     return render_template('/pages/match_history.html', matches=matches)
+
+
+@login_required
+@app.route('/minha_carteira.html')
+def user_wallet():
+    shopping = Sale.query.filter_by(user_id=current_user.id)
+    get_wallet = User.query.filter_by(id=current_user.id).first()
+    wallet_value = get_wallet.wallet
+    return render_template('/pages/wallet.html', shopping=shopping, wallet=wallet_value)
+
+@login_required
+@app.route('/comprar.html')
+def product_list():
+    products_list = Product.query.all()
+    return render_template('/pages/products_list.html', products_list=products_list)
+
+
+@app.route('/buy/<int:id_product>', methods=['GET', 'POST'])
+def buy_product(id_product):
+    if request.method == 'POST':
+        product = Product.query.filter_by(id=id_product).first()
+        function_return = mercadopago.payment(request, product=product)
+        product_url = function_return[0]
+        preference_id = function_return[1]['response']['id']
+        product_id = function_return[1]['response']['items'][0]['id']
+        product_name = function_return[1]['response']['items'][0]['title']
+        product_value = function_return[1]['response']['items'][0]['unit_price']
+        user_id = current_user.id
+        user_username = current_user.user
+        new_sale = Sale(user_id=user_id, user_username=user_username, preference_id=preference_id, product_id=product_id, product_value=product_value, product_name=product_name)
+        new_sale.save()
+        return redirect(product_url)
 
 
 # Return sitemap
@@ -324,17 +366,62 @@ def home_page():
     return render_template('pages/index.html')
 
 
-# @app.route('/<path>')
-# def index(path):
-#     if not current_user.is_authenticated:
-#         return redirect(url_for('login'))
-#
-#     content = None
-#     try:
-#
-#         # try to match the pages defined in -> pages/<input file>
-#         return render_template('pages/' + path)
-#
-#     except:
-#
-#         return render_template('pages/error-404.html')
+# Main Page
+@app.route('/resultado_compra.html', methods=['GET'])
+def mercado_pago_return():
+    """
+    TODO: Check what to do when the user closes the page and does not get redirect back
+    :return:
+    """
+    return_data = request.args.to_dict()
+    print(return_data['preference_id'])
+    if return_data['preference_id']:
+        try:
+            current_sale = Sale.query.filter_by(preference_id=return_data['preference_id']).first()
+            current_sale.collection_id = return_data['collection_id']
+            current_sale.collection_status = return_data['collection_status']
+            current_sale.payment_type = return_data['payment_type']
+            current_sale.merchant_order_id = return_data['merchant_order_id']
+            current_sale.preference_id = return_data['preference_id']
+            current_sale.site_id = return_data['site_id']
+            current_sale.processing_mode = return_data['processing_mode']
+            current_sale.collection_status = return_data['collection_status']
+            current_sale.sale_date = datetime.datetime.now()
+            current_sale.save()
+
+            collection_status = return_data['collection_status']
+
+            add_user_wallet = User.query.filter_by(id=current_sale.user_id).first()
+            actual_user_wallet_value = add_user_wallet.wallet
+            new_user_wallet_value = actual_user_wallet_value + current_sale.product_value
+            add_user_wallet.wallet = new_user_wallet_value
+            add_user_wallet.save()
+
+            return render_template('pages/payment_result.html', collection_status=collection_status)
+        except Exception as err:
+            print(err)
+    else:
+        # ->> What to do if the user closes the redirect page. Put here! <<-
+
+        # mercadopago.receive_payment_info(request, return_data)
+
+        # RETURN ERROR 101 - THE RETURN_DATA['PREFERENCE_ID'] IS EMPTY!
+
+        return render_template('pages/buy_error.html')
+    # return render_template('pages/payment_result.html', collection_status=collection_status)
+
+
+@app.route('/<path>')
+def index(path):
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+
+    content = None
+    try:
+
+        # try to match the pages defined in -> pages/<input file>
+        return render_template('pages/' + path)
+
+    except:
+
+        return render_template('pages/error-404.html')

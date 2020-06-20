@@ -64,7 +64,7 @@
                             </div>
                           </li>
                           <li class="nav-item">
-                            <a class="nav-link" href="{{url_for('user_wallet')}}">Carteira</a>
+                            <a class="nav-link" href="#">Carteira</a>
                           </li>
                           <li class="nav-item">
                             <a class="nav-link" href="#">Caixa de Mensagens</a>
@@ -84,10 +84,10 @@
                 <div class="card-profile-actions py-4 mt-lg-0">
                   <nav class="navbar navbar-expand-lg navbar-dark bg-default mt-4">
                     <div class="container-fluid">
-                      <a href={{url_for('match_creation')}} class="btn btn-default">Criar Partida</a>
-                    <a href= {{url_for('find_match')}} class="btn btn-default">Procurar Partida</a>
-                    <a href={{url_for('match_history')}} class="btn btn-default">Meu Histórico</a>
-                    <a href={{url_for('current_matches')}} class="btn btn-default">Partidas em Aberto</a>
+                      <a href={{url_for('game_room')}} class="btn btn-default">Home</a>
+                    <a href= {{url_for('user_wallet')}} class="btn btn-default">Histórico de Compras</a>
+                    <a href={{url_for('product_list')}} class="btn btn-default">Comprar</a>
+                    <a href="/" class="btn btn-default">Resgatar</a>
                       <div class="collapse navbar-collapse" id="navbar-primary2">
                         <div class="navbar-collapse-header">
                           <div class="row">
@@ -103,7 +103,43 @@
                     <div class="row">
                         <div class="col-md-12">
 <!--                            <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names..">-->
+                            <table class="table" id="myTable2">
+                    <thead>
+                        <tr>
+                            <th>Saldo Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                            <td>R$ {{ wallet }},00</td>
+                    </tr>
+                    </tbody>
+                </table>
+                          <table class="table" id="myTable">
+                    <thead>
+                        <tr>
+                            <th>Id Compra</th>
+                            <th>Produto</th>
+                            <th>Valor</th>
+                            <th>Usuário</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
 
+                    {% for shop in shopping %}
+                    <tr>
+                            <td>{{ shop.id }}</td>
+                            <td>{{ shop.product_name}}</td>
+                            <td>R$ {{ shop.product_value}},00</td>
+                            <td>{{ shop.user_username}}</td>
+                            <td>{{ shop.sale_date}}</td>
+
+                    </tr>
+
+                    {% endfor %}
+                    </tbody>
+                </table>
                         </div>
                     </div>
                 </div>
