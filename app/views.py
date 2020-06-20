@@ -59,6 +59,7 @@ def register():
         phone = None
         cpf = None
         birth_date = None
+        wallet = 0
         # filter User out of database through username
         user_instance = User.query.filter_by(user=user).first()
         # filter User out of database through username
@@ -70,7 +71,7 @@ def register():
 
             pw_hash = senha  # bc.generate_password_hash(password)
 
-            user_instance = User(user, email, pw_hash, name, last_name, phone, cpf, birth_date)
+            user_instance = User(user, email, pw_hash, name, last_name, phone, cpf, birth_date, wallet)
             user_instance.save()
 
             msg = 'User created, please <a href="' + url_for('login') + '">login</a>'
@@ -408,7 +409,7 @@ def mercado_pago_return():
         # RETURN ERROR 101 - THE RETURN_DATA['PREFERENCE_ID'] IS EMPTY!
 
         return render_template('pages/buy_error.html')
-    # return render_template('pages/payment_result.html', collection_status=collection_status)
+    return render_template('pages/payment_result.html', collection_status=collection_status)
 
 
 @app.route('/<path>')
