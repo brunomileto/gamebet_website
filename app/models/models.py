@@ -188,3 +188,32 @@ class Sale(UserMixin, db.Model):
         db.session.commit()
 
         return self
+
+class GetMoney(UserMixin, db.Model):
+    __tablename__ = 'get_money'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    user_username = db.Column(db.String(120))
+    value_wanted = db.Column(db.BIGINT)
+    order_date = db.Column(db.DateTime)
+    order_status = db.Column(db.String(120))
+
+    def __init__(self, user_id, user_username, value_wanted, order_date, order_status):
+        self.user_id = user_id
+        self.user_username = user_username
+        self.value_wanted = value_wanted
+        self.order_date = order_date
+        self.order_status = order_status
+
+    def __repr__(self):
+        return str(self.id) + ' - ' + str(self.user_username)
+
+    def save(self):
+        # inject self into db session
+        db.session.add(self)
+
+        # commit change and save the object
+        db.session.commit()
+
+        return self

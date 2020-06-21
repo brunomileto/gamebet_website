@@ -25,7 +25,7 @@
     </section>
     <section class="section">
       <div class="container-fluid">
-        <div class="card shadow mt--300 " style="height: 80rem;">
+        <div class="card shadow mt--300 " style="height: 120rem;">
           <div class="px-4">
             <div class="">
               <div class="">
@@ -103,48 +103,119 @@
                     <div class="row">
                         <div class="col-md-12">
 <!--                            <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names..">-->
-                          <table class="table" id="myTable">
-                    <thead>
-                        <tr>
-                            <th class="text-center">#</th>
-                            <th>Jogo</th>
-                            <th>Plataforma</th>
-                            <th>Valor</th>
-                            <th class="text-center">GameTag do Mandante</th>
-                            <th class="text-center">Regras</th>
-                            <th class="text-center">Comentário</th>
-                            <th class="text-center">GameTag do Desafiante</th>
-                            <th class="text-center">Status Partida</th>
 
-                            <th class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
 
-                    {% for match in matches %}
-                    <tr>
-                            <td>{{ match.id }}</td>
-                            <td>{{ match.game_name}}</td>
-                            <td>{{ match.platform}}</td>
-                            <td>{{ match.bet_value}}</td>
-                            <td>{{ match.match_creator_gametag}}</td>
-                            <td>{{ match.game_rules}}</td>
-                            <td>{{ match.comment}}</td>
-                            <td>{{ match.competitor_gametag}}</td>
-                            <td>{{ match.match_status}}</td>
 
-                            <td>
-                                <form action="{{ url_for('insert_results', id = match.id) }}" method="POST">
-                                <input type="hidden" name="id" value="{{ match.id }}"/>
-                                <input type="submit" class="btn btn-sm btn-outline-default" value="Inserir Resultados"/>
-                                </form>
-                            </td>
-                    </tr>
 
-                    {% endfor %}
 
-                    </tbody>
-                </table>
+                            <div class="wrapper">
+                                <div class="container">
+                                <div class="row">
+                                  <div class="col-md-14 col-md-offset-0">
+                                    <div class="description">
+                                      </div>
+
+                                    <div class="fresh-table">
+                                    <!--
+                                      Available colors for the full background: full-color-blue, full-color-azure, full-color-green, full-color-red, full-color-orange
+                                      Available colors only for the toolbar: toolbar-color-blue, toolbar-color-azure, toolbar-color-green, toolbar-color-red, toolbar-color-orange
+                                    -->
+                                      <div class="toolbar">
+                                        <button id="alertBtn" class="btn btn-default">Alert</button>
+                                      </div>
+
+                                      <table id="fresh-table" class="table">
+                                        <thead>
+<!--                                          <th data-field="actions" data-formatter="operateFormatter" data-events="operateEvents">Actions</th>-->
+                                          <th data-field="id">#</th>
+                                          <th data-field="name">Jogo</th>
+                                          <th data-field="platform">Plataforma</th>
+                                          <th data-field="bet_value">Valor</th>
+                                          <th data-field="match_creator_gametag">GameTag do Mandante</th>
+                                          <th data-field="rules">Regras</th>
+                                          <th data-field="comments">Comentário</th>
+                                          <th data-field="competitor_gametag">GameTag do Desafiante</th>
+                                          <th data-field="match_status">Status Partida</th>
+
+                                          <th data-field="Actions">Actions</th>
+
+                                        </thead>
+                                        <tbody>
+                                                {% for match in matches %}
+                                          <tr>
+                                            <td>{{ match.id }}</td>
+                                            <td>{{ match.game_name}}</td>
+                                            <td>{{ match.platform}}</td>
+                                            <td>{{ match.bet_value}}</td>
+                                            <td>{{ match.match_creator_gametag}}</td>
+                                            <td>{{ match.game_rules}}</td>
+                                            <td>{{ match.comment}}</td>
+                                            <td>{{ match.competitor_gametag}}</td>
+                                            <td>{{ match.match_status}}</td>
+
+                                            <td>
+                                                <form action="{{ url_for('insert_results', id = match.id) }}" method="POST">
+                                                <input type="hidden" name="id" value="{{ match.id }}"/>
+                                                <input type="submit" class="btn btn-sm btn-outline-default" value="Inserir Resultados"/>
+                                                </form>
+                                            </td>
+                                          </tr>
+
+                                    {% endfor %}
+
+                                        </tbody>
+                                      </table>
+                                    </div>
+
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+
+
+<!--                            <table class="table" id="myTable">-->
+<!--                    <thead>-->
+<!--                        <tr>-->
+<!--                            <th class="text-center">#</th>-->
+<!--                            <th>Jogo</th>-->
+<!--                            <th>Plataforma</th>-->
+<!--                            <th>Valor</th>-->
+<!--                            <th class="text-center">GameTag do Mandante</th>-->
+<!--                            <th class="text-center">Regras</th>-->
+<!--                            <th class="text-center">Comentário</th>-->
+<!--                            <th class="text-center">GameTag do Desafiante</th>-->
+<!--                            <th class="text-center">Status Partida</th>-->
+
+<!--                            <th class="text-center">Actions</th>-->
+<!--                        </tr>-->
+<!--                    </thead>-->
+<!--                    <tbody>-->
+
+<!--                    {% for match in matches %}-->
+<!--                    <tr>-->
+<!--                            <td>{{ match.id }}</td>-->
+<!--                            <td>{{ match.game_name}}</td>-->
+<!--                            <td>{{ match.platform}}</td>-->
+<!--                            <td>{{ match.bet_value}}</td>-->
+<!--                            <td>{{ match.match_creator_gametag}}</td>-->
+<!--                            <td>{{ match.game_rules}}</td>-->
+<!--                            <td>{{ match.comment}}</td>-->
+<!--                            <td>{{ match.competitor_gametag}}</td>-->
+<!--                            <td>{{ match.match_status}}</td>-->
+
+<!--                            <td>-->
+<!--                                <form action="{{ url_for('insert_results', id = match.id) }}" method="POST">-->
+<!--                                <input type="hidden" name="id" value="{{ match.id }}"/>-->
+<!--                                <input type="submit" class="btn btn-sm btn-outline-default" value="Inserir Resultados"/>-->
+<!--                                </form>-->
+<!--                            </td>-->
+<!--                    </tr>-->
+
+<!--                    {% endfor %}-->
+
+<!--                    </tbody>-->
+<!--                </table>-->
                         </div>
                     </div>
                 </div>
@@ -171,6 +242,7 @@
 <!--        </div>-->
 <!--      </div>-->
 
+
         <script>
 function myFunction() {
   // Declare variables
@@ -194,8 +266,86 @@ function myFunction() {
   }
 }
 </script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+        <link href="../../static/assets/table_assets/assets/css/fresh-bootstrap-table.css" rel="stylesheet" />
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+        <link href="http://fonts.googleapis.com/css?family=Roboto:400,700,300" rel="stylesheet" type="text/css">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<!--        <script src="https://unpkg.com/bootstrap-table/dist/bootstrap-table.min.js"></script>-->
+
+        <script src="/static/assets/table_assets/assets/js/bootstrap-table.min.js"></script>
+        <script type="text/javascript">
+                                var $table = $('#fresh-table')
+                                var $alertBtn = $('#alertBtn')
+
+                                window.operateEvents = {
+                                  'click .like': function (e, value, row, index) {
+                                    alert('You click like icon, row: ' + JSON.stringify(row))
+                                    console.log(value, row, index)
+                                  },
+                                  'click .edit': function (e, value, row, index) {
+                                    alert('You click edit icon, row: ' + JSON.stringify(row))
+                                    console.log(value, row, index)
+                                  },
+                                  'click .remove': function (e, value, row, index) {
+                                    $table.bootstrapTable('remove', {
+                                      field: 'id',
+                                      values: [row.id]
+                                    })
+                                  }
+                                }
+
+                                function operateFormatter(value, row, index) {
+                                  return [
+                                    '<a rel="tooltip" title="Like" class="table-action like" href="javascript:void(0)" title="Like">',
+                                      '<i class="fa fa-heart"></i>',
+                                    '</a>',
+                                    '<a rel="tooltip" title="Edit" class="table-action edit" href="javascript:void(0)" title="Edit">',
+                                      '<i class="fa fa-edit"></i>',
+                                    '</a>',
+                                    '<a rel="tooltip" title="Remove" class="table-action remove" href="javascript:void(0)" title="Remove">',
+                                      '<i class="fa fa-remove"></i>',
+                                    '</a>'
+                                  ].join('')
+                                }
+
+                                $(function () {
+                                  $table.bootstrapTable({
+                                    classes: 'table table-hover table-striped',
+                                    toolbar: '.toolbar',
+
+                                    search: true,
+                                    showRefresh: true,
+                                    showToggle: false,
+                                    showColumns: false,
+                                    pagination: true,
+                                    striped: true,
+                                    sortable: true,
+                                    pageSize: 8,
+                                    pageList: [8, 10, 25, 50, 100],
+
+                                    formatShowingRows: function (pageFrom, pageTo, totalRows) {
+                                      return ''
+                                    },
+                                    formatRecordsPerPage: function (pageNumber) {
+                                      return pageNumber + ' rows visible'
+                                    }
+                                  })
+
+                                  $alertBtn.click(function () {
+                                    alert('You pressed on Alert')
+                                  })
+                                })
+
+
+
+                              </script>
 
     </section>
+
   </main>
 
 {% endblock content %}

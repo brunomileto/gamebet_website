@@ -24,7 +24,7 @@ from google.auth.transport.requests import Request
 
 from flask import jsonify
 from gamebet_website.app import db
-from gamebet_website.app.models.models import Match
+from gamebet_website.app.models.models import Match, User
 
 
 def check_results(match_id):
@@ -33,6 +33,15 @@ def check_results(match_id):
     if match_for_check.match_creator_match_result == 'Empate' and match_for_check.competitor_match_result == "Empate":
         match_for_check.match_status = 'EMPATE = CORRETO'
         match_for_check.save()
+
+        match_creator_wallet_att = User.query.filter_by(id=match_for_check.match_creator_id).first()
+        match_creator_wallet_att.wallet = int(match_creator_wallet_att.wallet) + int(match_for_check.bet_value)
+        match_creator_wallet_att.save()
+
+        competitor_wallet_att = User.query.filter_by(id=match_for_check.match_creator_id).first()
+        competitor_wallet_att.wallet = int(competitor_wallet_att.wallet) + int(match_for_check.bet_value)
+        competitor_wallet_att.save()
+
     else:
         match_for_check.match_status = 'ERRO - ALGUEM LANÇOU DIFERENTE'
         match_for_check.save()
@@ -41,9 +50,21 @@ def check_results(match_id):
         match_for_check.match_status = 'VITORIA CRIADOR = CORRETO'
         match_for_check.save()
 
+        match_creator_wallet_att = User.query.filter_by(id=match_for_check.match_creator_id).first()
+        match_creator_wallet_att.wallet = int(match_creator_wallet_att.wallet) + int(match_for_check.bet_value) * 2 - \
+                                          int(match_for_check.bet_value * 2) * 0.1
+        match_creator_wallet_att.save()
+
+
     elif match_for_check.match_creator_match_result == 'Derrota' and match_for_check.competitor_match_result == "Vitória":
         match_for_check.match_status = 'VITORIA COMPETIDOR = CORRETO'
         match_for_check.save()
+
+        competitor_wallet_att = User.query.filter_by(id=match_for_check.match_creator_id).first()
+        competitor_wallet_att.wallet = int(competitor_wallet_att.wallet) + int(match_for_check.bet_value) * 2 - \
+                                          int(match_for_check.bet_value * 2) * 0.1
+        competitor_wallet_att.save()
+
     else:
         match_for_check.match_status = 'ERRO - ALGUEM LANÇOU DIFERENTE'
         match_for_check.save()
@@ -148,7 +169,8 @@ def send_email(path):
         for label in labels:
             print(label['name'])
 
-    create_message_with_attachment('brunomill3003@gmail.com', 'bruno_mileto@gmail.com', 'test', 'message test', path, service)
+    create_message_with_attachment('brunomill3003@gmail.com', 'bruno_mileto@gmail.com', 'test', 'message test', path,
+                                   service)
 
 
 def create_message_with_attachment(
@@ -165,7 +187,6 @@ def create_message_with_attachment(
   Returns:
     An object containing a base64url encoded email object.
   """
-
 
     message = MIMEMultipart()
     message['to'] = to

@@ -51,3 +51,7 @@ class InsertResults(FlaskForm):
     match_creator_goals = IntegerField('match_creator_goals', validators=[InputRequired()])
     competitor_goals = IntegerField('competitor_goals', validators=[InputRequired()])
     print = StringField('print', validators=[DataRequired()])
+
+
+class GetMoneyForm(FlaskForm):
+    value_wanted = IntegerField('value_wanted', validators=[InputRequired()])

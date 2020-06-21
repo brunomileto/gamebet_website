@@ -1,0 +1,276 @@
+{% extends "layouts/default-fullscreen.html" %}
+
+{% block title %} Sala de Jogos {% endblock %}
+
+{% block content %}
+
+  <main class="profile-page">
+    <section class="section-profile-cover section-shaped my-0">
+      <!-- Circles background -->
+      <div class="shape shape-style-1 shape-primary alpha-4">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <!-- SVG separator -->
+      <div class="separator separator-bottom separator-skew">
+        <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg">
+          <polygon class="fill-white" points="2560 0 2560 100 0 100"></polygon>
+        </svg>
+      </div>
+    </section>
+    <section class="section">
+      <div class="container-fluid">
+        <div class="card shadow mt--300 " style="height: 120rem;">
+          <div class="px-4">
+            <div class="">
+              <div class="">
+                <div class="">
+                          <!-- Navbar primary -->
+                  <nav class="navbar navbar-expand-lg navbar-dark bg-default mt-4">
+                    <div class="container-fluid">
+                      <a class="navbar-brand" href={{url_for('game_room')}}>Sala de Jogos</a>
+                      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-primary" aria-controls="navbar-primary" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                      </button>
+                      <div class="collapse navbar-collapse" id="navbar-primary">
+                        <div class="navbar-collapse-header">
+                          <div class="row">
+                            <div class="col-6 collapse-brand">
+                              <a href="./index.html">
+                                <img alt="image" src="/static/assets/img/brand/white.png">
+                              </a>
+                            </div>
+                            <div class="col-6 collapse-close">
+                              <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-primary" aria-controls="navbar-primary" aria-expanded="false" aria-label="Toggle navigation">
+                                <span></span>
+                                <span></span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <ul class="navbar-nav ml-lg-auto">
+                          <li class="nav-item dropdown">
+                            <a class="nav-link" href="#" id="navbar-primary_dropdown_2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Perfil <span class="sr-only">(content)</span> </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-primary_dropdown_1">
+                              <a class="dropdown-item" href="#">Action</a>
+                              <a class="dropdown-item" href="#">Another action</a>
+                              <div class="dropdown-divider"></div>
+                              <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Carteira</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Caixa de Mensagens</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Ajuda</a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </nav>
+                </div>
+              </div>
+            </div>
+            <!-- INSERT CONTENT HERE -->
+            <div class="row justify-content-center">
+                <div class="card-profile-actions py-4 mt-lg-0">
+                  <nav class="navbar navbar-expand-lg navbar-dark bg-default mt-4">
+                    <div class="container-fluid">
+                      <a href={{url_for('game_room')}} class="btn btn-default">Home</a>
+                    <a href= {{url_for('user_wallet')}} class="btn btn-default">Histórico de Compras</a>
+                    <a href={{url_for('product_list')}} class="btn btn-default">Comprar</a>
+                    <a href={{url_for('get_money_function')}} class="btn btn-default">Resgatar</a>
+                      <div class="collapse navbar-collapse" id="navbar-primary2">
+                        <div class="navbar-collapse-header">
+                          <div class="row">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </nav>
+                </div>
+              </div>
+            </div>
+            <div class="text-center mt-5">
+                    <div class="row">
+                        <div class="col-md-12">
+<!--                            <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names..">-->
+                           <div class="wrapper">
+                                <div class="container">
+                                <div class="row">
+                                  <div class="col-md-12 col-md-offset-0">
+                                    <div class="description">
+                                      </div>
+
+                                    <div class="fresh-table">
+                                    <!--
+                                      Available colors for the full background: full-color-blue, full-color-azure, full-color-green, full-color-red, full-color-orange
+                                      Available colors only for the toolbar: toolbar-color-blue, toolbar-color-azure, toolbar-color-green, toolbar-color-red, toolbar-color-orange
+                                    -->
+                                      <div class="toolbar">
+                                        <button id="alertBtn" class="btn btn-default">Alert</button>
+                                      </div>
+
+                                      <table id="fresh-table" class="table">
+                    <thead>
+                        <tr>
+                            <th data-type="id">Id Solicitação</th>
+                            <th data-type="user_username">Nome Usuário</th>
+                            <th data-type="value_wanted">Valor Solicitado</th>
+                            <th data-type="order_date">Data Solicitação</th>
+                            <th data-type="order_status">Status Solicitação </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for order in orders %}
+                    <tr>
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.user_username}}</td>
+                            <td>R$ {{ order.value_wanted}},00</td>
+                            <td>{{ order.order_date}}</td>
+                            <td>{{ order.order_status}}</td>
+
+                    </tr>
+
+                    {% endfor %}
+                    </tbody>
+                </table>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+<!--              <h3>-->
+<!--                {{ current_user.user }}-->
+<!--              </h3>-->
+<!--              <div class="h6 font-weight-300">-->
+<!--                  {{ current_user.email }}-->
+<!--              </div>-->
+<!--              <div class="h6 mt-4"><i class="ni business_briefcase-24 mr-2"></i>.</div>-->
+<!--              <div><i class="ni education_hat mr-2"></i>.</div>-->
+<!--            </div>-->
+<!--            <div class="mt-5 py-5 border-top text-center">-->
+<!--              <div class="row justify-content-center">-->
+<!--                <div class="col-lg-9">-->
+<!--                  <p>.</p>-->
+<!--                  <a href="#">.</a>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+        <script>
+function myFunction() {
+  // Declare variables
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr");
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+</script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+        <link href="../../static/assets/table_assets/assets/css/fresh-bootstrap-table.css" rel="stylesheet" />
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+        <link href="http://fonts.googleapis.com/css?family=Roboto:400,700,300" rel="stylesheet" type="text/css">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<!--        <script src="https://unpkg.com/bootstrap-table/dist/bootstrap-table.min.js"></script>-->
+
+        <script src="/static/assets/table_assets/assets/js/bootstrap-table.min.js"></script>
+        <script type="text/javascript">
+                                var $table = $('#fresh-table')
+                                var $alertBtn = $('#alertBtn')
+
+                                window.operateEvents = {
+                                  'click .like': function (e, value, row, index) {
+                                    alert('You click like icon, row: ' + JSON.stringify(row))
+                                    console.log(value, row, index)
+                                  },
+                                  'click .edit': function (e, value, row, index) {
+                                    alert('You click edit icon, row: ' + JSON.stringify(row))
+                                    console.log(value, row, index)
+                                  },
+                                  'click .remove': function (e, value, row, index) {
+                                    $table.bootstrapTable('remove', {
+                                      field: 'id',
+                                      values: [row.id]
+                                    })
+                                  }
+                                }
+
+                                function operateFormatter(value, row, index) {
+                                  return [
+                                    '<a rel="tooltip" title="Like" class="table-action like" href="javascript:void(0)" title="Like">',
+                                      '<i class="fa fa-heart"></i>',
+                                    '</a>',
+                                    '<a rel="tooltip" title="Edit" class="table-action edit" href="javascript:void(0)" title="Edit">',
+                                      '<i class="fa fa-edit"></i>',
+                                    '</a>',
+                                    '<a rel="tooltip" title="Remove" class="table-action remove" href="javascript:void(0)" title="Remove">',
+                                      '<i class="fa fa-remove"></i>',
+                                    '</a>'
+                                  ].join('')
+                                }
+
+                                $(function () {
+                                  $table.bootstrapTable({
+                                    classes: 'table table-hover table-striped',
+                                    toolbar: '.toolbar',
+
+                                    search: true,
+                                    showRefresh: true,
+                                    showToggle: false,
+                                    showColumns: false,
+                                    pagination: true,
+                                    striped: true,
+                                    sortable: true,
+                                    pageSize: 8,
+                                    pageList: [8, 10, 25, 50, 100],
+
+                                    formatShowingRows: function (pageFrom, pageTo, totalRows) {
+                                      return ''
+                                    },
+                                    formatRecordsPerPage: function (pageNumber) {
+                                      return pageNumber + ' rows visible'
+                                    }
+                                  })
+
+                                  $alertBtn.click(function () {
+                                    alert('You pressed on Alert')
+                                  })
+                                })
+
+
+
+                              </script>
+    </section>
+  </main>
+
+{% endblock content %}

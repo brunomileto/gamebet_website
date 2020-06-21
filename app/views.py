@@ -18,8 +18,8 @@ from sqlalchemy import or_, and_
 # App modules
 from gamebet_website.app import app, lm
 from gamebet_website.app.models.forms import LoginForm, RegisterForm, MatchCreationForm, InsertResults, GAME_CHOICES, \
-    PLATFORM_CHOICES, BET_VALUE_CHOICES, RULES_CHOICES, GAME_MODE_CHOICES, MATCH_RESULT_CHOICES
-from gamebet_website.app.models.models import User, Match, Product,Sale
+    PLATFORM_CHOICES, BET_VALUE_CHOICES, RULES_CHOICES, GAME_MODE_CHOICES, MATCH_RESULT_CHOICES, GetMoneyForm
+from gamebet_website.app.models.models import User, Match, Product, Sale, GetMoney
 from gamebet_website.app.util import check_results, send_email
 from gamebet_website.app.mercadopago import mercadopago
 from urllib.parse import urlparse, parse_qs
@@ -248,6 +248,7 @@ def confirm_accept_match(id):
     return render_template('/pages/current_matches.html', matches=matches)
 
 
+
 @login_required
 @app.route('/partidas_em_aberto.html')
 def current_matches():
@@ -299,7 +300,7 @@ def insert_results(id):
             current_match.match_status = "Em Análise"
             current_match.save()
             check_results(int(current_match.id))
-            return redirect(url_for('insert_results'))
+            return redirect(url_for('match_history'))
 
 
         else:
@@ -310,6 +311,51 @@ def insert_results(id):
 
 
     return render_template('pages/insert_results.html', form=form)
+
+
+
+@login_required
+@app.route('/solicitar_retirada.html', methods=['GET', 'POST'])
+def get_money_function():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    msg = None
+    actual_user = User.query.filter_by(id=current_user.id).first()
+    actual_user_wallet = int(actual_user.wallet)
+    form = GetMoneyForm(request.form)
+
+    if form.validate_on_submit():
+        money_wanted = request.form.get('value_wanted', type=int)
+        if actual_user_wallet >= 40:
+            if actual_user_wallet > money_wanted > 40:
+                order_date = datetime.datetime.now()
+                order_status = "Em Análise"
+                new_order_request = GetMoney(user_id=current_user.id, user_username=current_user.user,
+                                             value_wanted=money_wanted, order_date=order_date, order_status=order_status)
+                new_order_request.save()
+                get_orders = GetMoney.query.filter_by(user_id=current_user.id)
+                actual_user.wallet = actual_user.wallet-money_wanted
+                actual_user.save()
+                return redirect(url_for('get_money_history_function', get_orders=get_orders))
+
+            else:
+                print(actual_user_wallet)
+                msg = "Solicitação Não Aprovada. Você precisa ficar com ao menos R$50,00 em sua conta!"
+                return redirect(url_for('get_money_function', msg=msg))
+
+        else:
+            print(actual_user_wallet)
+            msg = "Solicitação Não Aprovada. Você não possui menos de R$50,00 em sua conta!"
+            return redirect(url_for('get_money_function', msg=msg))
+    return render_template('pages/get_money.html', form=form)
+
+
+@login_required
+@app.route('/historico_solicitações_retirada.html')
+def get_money_history_function():
+    orders = GetMoney.query.filter_by(user_id=current_user.id)
+
+    return render_template('/pages/get_money_history.html', orders=orders)
 
 
 @login_required
