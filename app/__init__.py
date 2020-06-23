@@ -16,7 +16,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 
-app.config.from_object('gamebet_website.app.configuration.Config')
+app.config.from_object('gamebet_website.app.configuration.DebugConfig')
 
 db = SQLAlchemy(app)  # flask-sqlalchemy
 bc = Bcrypt(app)  # flask-bcrypt

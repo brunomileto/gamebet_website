@@ -64,7 +64,7 @@
                             </div>
                           </li>
                           <li class="nav-item">
-                            <a class="nav-link" href="#">Carteira</a>
+                            <a class="nav-link" href={{url_for('user_wallet')}}>Carteira</a>
                           </li>
                           <li class="nav-item">
                             <a class="nav-link" href="#">Caixa de Mensagens</a>
@@ -84,10 +84,10 @@
                 <div class="card-profile-actions py-4 mt-lg-0">
                   <nav class="navbar navbar-expand-lg navbar-dark bg-default mt-4">
                     <div class="container-fluid">
-                      <a href={{url_for('match_creation')}} class="btn btn-default">Criar Partida</a>
-                    <a href= {{url_for('find_match')}} class="btn btn-default">Procurar Partida</a>
-                    <a href={{url_for('match_history')}} class="btn btn-default">Meu Histórico</a>
-                    <a href={{url_for('current_matches')}} class="btn btn-default">Partidas em Aberto</a>
+                      <a href={{url_for('match_creation')}} class="btn btn-default_argon">Criar Partida</a>
+                    <a href= {{url_for('find_match')}} class="btn btn-default_argon">Procurar Partida</a>
+                    <a href={{url_for('match_history')}} class="btn btn-default_argon">Meu Histórico</a>
+                    <a href={{url_for('current_matches')}} class="btn btn-default_argon">Partidas em Aberto</a>
                       <div class="collapse navbar-collapse" id="navbar-primary2">
                         <div class="navbar-collapse-header">
                           <div class="row">
@@ -103,15 +103,10 @@
                     <div class="row">
                         <div class="col-md-12">
 <!--                            <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names..">-->
-
-
-
-
-
                             <div class="wrapper">
                                 <div class="container">
                                 <div class="row">
-                                  <div class="col-md-14 col-md-offset-0">
+                                  <div class="col-md-12 col-md-offset-0">
                                     <div class="description">
                                       </div>
 
@@ -125,7 +120,7 @@
                                       </div>
 
                                       <table id="fresh-table" class="table">
-                                        <thead>
+                                            <thead>
 <!--                                          <th data-field="actions" data-formatter="operateFormatter" data-events="operateEvents">Actions</th>-->
                                           <th data-field="id">#</th>
                                           <th data-field="name">Jogo</th>
@@ -266,14 +261,18 @@ function myFunction() {
   }
 }
 </script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+<!--        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">-->
         <link href="../../static/assets/table_assets/assets/css/fresh-bootstrap-table.css" rel="stylesheet" />
-        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <link href="../../static/assets/css/fresh-bootstrap-table.css" rel="stylesheet" />
+
+                            <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
         <link href="http://fonts.googleapis.com/css?family=Roboto:400,700,300" rel="stylesheet" type="text/css">
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>-->
+            <script src="/static/assets/vendor/bootstrap/bootstrap.min.js"></script>
+
 <!--        <script src="https://unpkg.com/bootstrap-table/dist/bootstrap-table.min.js"></script>-->
 
         <script src="/static/assets/table_assets/assets/js/bootstrap-table.min.js"></script>
