@@ -43,7 +43,7 @@ def check_results(match_id):
         competitor_wallet_att.save()
 
     else:
-        match_for_check.match_status = 'ERRO - ALGUEM LANÇOU DIFERENTE'
+        match_for_check.match_status = 'Em Análise'
         match_for_check.save()
 
     if match_for_check.match_creator_match_result == 'Vitória' and match_for_check.competitor_match_result == "Derrota":
@@ -62,11 +62,11 @@ def check_results(match_id):
 
         competitor_wallet_att = User.query.filter_by(id=match_for_check.match_creator_id).first()
         competitor_wallet_att.wallet = int(competitor_wallet_att.wallet) + int(match_for_check.bet_value) * 2 - \
-                                          int(match_for_check.bet_value * 2) * 0.1
+                                       int(match_for_check.bet_value * 2) * 0.1
         competitor_wallet_att.save()
 
     else:
-        match_for_check.match_status = 'ERRO - ALGUEM LANÇOU DIFERENTE'
+        match_for_check.match_status = "Em Análise"
         match_for_check.save()
 
 

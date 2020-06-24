@@ -1,17 +1,7 @@
-# -*- encoding: utf-8 -*-
-"""
-License: MIT
-Copyright (c) 2019 - present AppSeed.us
-"""
-
-# Python modules
 import os
 import datetime
 
-# Flask modules
-import pprint
-
-from flask import render_template, request, url_for, redirect, send_from_directory, jsonify
+from flask import render_template, request, url_for, redirect, send_from_directory
 from flask_login import login_user, logout_user, current_user, login_required
 from sqlalchemy import or_, and_
 
@@ -20,9 +10,8 @@ from gamebet_website.app import app, lm
 from gamebet_website.app.models.forms import LoginForm, RegisterForm, MatchCreationForm, InsertResults, GAME_CHOICES, \
     PLATFORM_CHOICES, BET_VALUE_CHOICES, RULES_CHOICES, GAME_MODE_CHOICES, MATCH_RESULT_CHOICES, GetMoneyForm
 from gamebet_website.app.models.models import User, Match, Product, Sale, GetMoney
-from gamebet_website.app.util import check_results, send_email
+from gamebet_website.app.util import check_results
 from gamebet_website.app.mercadopago import mercadopago
-from urllib.parse import urlparse, parse_qs
 
 
 # provide login manager with load_user callback
@@ -101,16 +90,21 @@ def login():
         # filter User out of database through username
         user = User.query.filter_by(user=username).first()
 
-        if user:
-
-            # if bc.check_password_hash(username.password, password):
-            if user.password == password:
+        if user.user == 'admin':
+            if user.password == 'test':
                 login_user(user)
-                return redirect(url_for('game_room'))
+                return redirect(url_for('admin_dashboard'))
             else:
-                msg = "Wrong password. Please try again."
+                msg = 'Senha de administrador, incorreta. Por favor, tente novamente.'
         else:
-            msg = "Unknown username"
+            if user:
+                if user.password == password:
+                    login_user(user)
+                    return redirect(url_for('game_room'))
+                else:
+                    msg = "Wrong password. Please try again."
+            else:
+                msg = "Unknown username"
 
     return render_template('accounts/login.html', form=form, msg=msg)
 
@@ -121,7 +115,6 @@ def login():
 def game_room():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-
 
     return render_template('pages/game_room.html')
     # try:
@@ -141,12 +134,10 @@ def match_creation():
     form = MatchCreationForm(request.form)
     msg = None
     current_user_wallet = User.query.filter_by(id=current_user.id).first()
+
     if int(current_user_wallet.wallet) < 5:
         msg = 'Você não possui saldo suficiente, compre mais créditos!'
     else:
-        content = None
-
-
 
         if form.validate_on_submit():
             bet_value = dict(BET_VALUE_CHOICES).get(form.bet_value.data)
@@ -175,11 +166,14 @@ def match_creation():
                 competitor_match_creator_goals = None
                 competitor_print = None
                 match_status = 'Procurando'
-                match_object = Match(match_creator_id, competitor_id, game_name, platform, bet_value, match_creator_gametag,
+                match_object = Match(match_creator_id, competitor_id, game_name, platform, bet_value,
+                                     match_creator_gametag,
                                      competitor_gametag, comments, rules, game_mode, match_creator_username,
                                      competitor_username, match_status, match_creator_match_result,
-                                     match_creator_match_creator_goals, match_creator_competitor_goals, match_creator_print,
-                                     competitor_match_result, competitor_match_creator_goals, competitor_competitor_goals,
+                                     match_creator_match_creator_goals, match_creator_competitor_goals,
+                                     match_creator_print,
+                                     competitor_match_result, competitor_match_creator_goals,
+                                     competitor_competitor_goals,
                                      competitor_print)
                 match_object.save()
                 matches_list = Match.query.filter_by(id=int(match_object.id)).first()
@@ -187,7 +181,6 @@ def match_creation():
                 if matches_list:
                     current_user_wallet.wallet = int(current_user_wallet.wallet) - int(bet_value)
                     current_user_wallet.save()
-                    msg = "Partida Criada com sucesso"
                     return redirect(url_for('game_room'))
                 else:
                     msg = 'Partida não foi criada, cheque as informações inseridas'
@@ -204,7 +197,6 @@ def match_creation():
 
 @app.route('/procurar_partida.html', methods=['GET', 'POST'])
 def find_match():
-    results = []
     available_matches = Match.query.filter_by(match_status='Procurando').filter(
         Match.match_creator_id != int(current_user.id))
     get_user_wallet = User.query.filter_by(id=current_user.id).first()
@@ -223,8 +215,8 @@ def find_match():
 def accept_match(id):
     match_desired = Match.query.filter_by(id=id)
     if request.method == 'POST':
-            id = request.form['id']
-            redirect(url_for('confirm_accept_match', id=id))
+        id = request.form['id']
+        redirect(url_for('confirm_accept_match', id=id))
     return render_template('/pages/accept_match.html', match_desired=match_desired)
 
 
@@ -246,7 +238,6 @@ def confirm_accept_match(id):
         id = request.form['id']
         redirect(url_for('insert_results', id=id))
     return render_template('/pages/current_matches.html', matches=matches)
-
 
 
 @login_required
@@ -309,9 +300,7 @@ def insert_results(id):
 
         return redirect(url_for('game_room'))
 
-
     return render_template('pages/insert_results.html', form=form)
-
 
 
 @login_required
@@ -331,10 +320,11 @@ def get_money_function():
                 order_date = datetime.datetime.now()
                 order_status = "Em Análise"
                 new_order_request = GetMoney(user_id=current_user.id, user_username=current_user.user,
-                                             value_wanted=money_wanted, order_date=order_date, order_status=order_status)
+                                             value_wanted=money_wanted, order_date=order_date,
+                                             order_status=order_status)
                 new_order_request.save()
                 get_orders = GetMoney.query.filter_by(user_id=current_user.id)
-                actual_user.wallet = actual_user.wallet-money_wanted
+                actual_user.wallet = actual_user.wallet - money_wanted
                 actual_user.save()
                 return redirect(url_for('get_money_history_function', get_orders=get_orders))
 
@@ -377,6 +367,7 @@ def user_wallet():
     wallet_value = get_wallet.wallet
     return render_template('/pages/wallet.html', shopping=shopping, wallet=wallet_value)
 
+
 @login_required
 @app.route('/comprar.html')
 def product_list():
@@ -396,7 +387,8 @@ def buy_product(id_product):
         product_value = function_return[1]['response']['items'][0]['unit_price']
         user_id = current_user.id
         user_username = current_user.user
-        new_sale = Sale(user_id=user_id, user_username=user_username, preference_id=preference_id, product_id=product_id, product_value=product_value, product_name=product_name)
+        new_sale = Sale(user_id=user_id, user_username=user_username, preference_id=preference_id,
+                        product_id=product_id, product_value=product_value, product_name=product_name)
         new_sale.save()
         return redirect(product_url)
 
@@ -463,12 +455,46 @@ def index(path):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
-    content = None
-    try:
+    if current_user.user == 'admin':
+        if current_user.password == 'test':
+            return render_template('dashboard/' + path)
+    else:
+        try:
 
-        # try to match the pages defined in -> pages/<input file>
-        return render_template('pages/' + path)
+            # try to match the pages defined in -> pages/<input file>
+            return render_template('pages/' + path)
 
-    except:
+        except:
 
+            return render_template('pages/error-404.html')
+
+
+@app.route('/admin_dashboard.html')
+def admin_dashboard():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    if current_user.user == 'admin':
+        if current_user.password == 'test':
+            return render_template('dashboard/dashboard.html')
+    else:
         return render_template('pages/error-404.html')
+
+
+@login_required
+@app.route('/dashboard_users.html')
+def admin_dashboard_users():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    elif not current_user.user == 'admin':
+        return render_template('/game_room.html')
+    else:
+        opened_matches = Match.query.filter_by(match_status='Procurando')
+        ongoing_matches = Match.query.filter_by(match_status='Em partida')
+        on_analyzes = Match.query.filter_by(match_status='Em Análise')
+        finalized_matches = Match.query.filter(and_(Match.match_status != "Procurando",
+                                                    Match.match_status != "Aguardando",
+                                                    Match.match_status != "Em Análise",
+                                                    Match.match_status != "Em Partida"))
+        return render_template('dashboard/dashboard_users.html', opened_matches=opened_matches,
+                               ongoing_matches=ongoing_matches, on_analyzes=on_analyzes,
+                               finalized_matches=finalized_matches)
