@@ -3,7 +3,7 @@ import os
 import datetime
 import pprint
 
-from flask import render_template, request, url_for, redirect, send_from_directory, jsonify
+from flask import render_template, request, url_for, redirect, send_from_directory, jsonify, Response
 from flask_login import login_user, logout_user, current_user, login_required
 from sqlalchemy import or_, and_
 
@@ -452,6 +452,12 @@ def mercado_pago_return():
         return render_template('pages/buy_error.html')
     return render_template('pages/payment_result.html', collection_status=collection_status)
 
+
+@app.route('/test.html', methods=['GET', 'POST'])
+def test():
+    result = mercadopago.get_payment_info(req=request)
+    status_code = Response(status=200)
+    return status_code
 
 @app.route('/<path>')
 def index(path):

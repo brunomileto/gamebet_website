@@ -41,7 +41,14 @@ def payment(req, **kwargs):
     return [product_url, preference_result]
 
 
+def get_payment_info(req, **kwargs):
+    paymentInfo = mp.get_payment(kwargs["id"])
+    print(paymentInfo)
+    if paymentInfo["status"] == 200:
 
+        return url_for('test', json_values=json.dumps(paymentInfo, indent=4))
+    else:
+        return None
 
 
 
