@@ -1,14 +1,17 @@
+import json
 import os
 import datetime
+import pprint
 
-from flask import render_template, request, url_for, redirect, send_from_directory
+from flask import render_template, request, url_for, redirect, send_from_directory, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 from sqlalchemy import or_, and_
 
 # App modules
 from gamebet_website.app import app, lm
 from gamebet_website.app.models.forms import LoginForm, RegisterForm, MatchCreationForm, InsertResults, GAME_CHOICES, \
-    PLATFORM_CHOICES, BET_VALUE_CHOICES, RULES_CHOICES, GAME_MODE_CHOICES, MATCH_RESULT_CHOICES, GetMoneyForm
+    PLATFORM_CHOICES, BET_VALUE_CHOICES, RULES_CHOICES, GAME_MODE_CHOICES, MATCH_RESULT_CHOICES, GetMoneyForm, \
+    match_winner_form
 from gamebet_website.app.models.models import User, Match, Product, Sale, GetMoney
 from gamebet_website.app.util import check_results
 from gamebet_website.app.mercadopago import mercadopago
@@ -89,7 +92,7 @@ def login():
 
         # filter User out of database through username
         user = User.query.filter_by(user=username).first()
-
+        print(user)
         if user.user == 'admin':
             if user.password == 'test':
                 login_user(user)
@@ -413,8 +416,8 @@ def mercado_pago_return():
     :return:
     """
     return_data = request.args.to_dict()
-    print(return_data['preference_id'])
-    if return_data['preference_id']:
+    print(return_data)
+    if return_data:
         try:
             current_sale = Sale.query.filter_by(preference_id=return_data['preference_id']).first()
             current_sale.collection_id = return_data['collection_id']
@@ -455,9 +458,9 @@ def index(path):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
-    if current_user.user == 'admin':
-        if current_user.password == 'test':
-            return render_template('dashboard/' + path)
+    # if current_user.user == 'admin':
+    #     if current_user.password == 'test':
+    #         return render_template('dashboard/' + path)
     else:
         try:
 
@@ -475,18 +478,18 @@ def admin_dashboard():
         return redirect(url_for('login'))
     if current_user.user == 'admin':
         if current_user.password == 'test':
-            return render_template('dashboard/dashboard.html')
+            return render_template('dashboard/dashboard_finance.html')
     else:
         return render_template('pages/error-404.html')
 
 
 @login_required
-@app.route('/dashboard_users.html')
+@app.route('/dashboard.html', methods=['GET', 'POST'])
 def admin_dashboard_users():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     elif not current_user.user == 'admin':
-        return render_template('/game_room.html')
+        return render_template('/sala_de_jogo.html')
     else:
         opened_matches = Match.query.filter_by(match_status='Procurando')
         ongoing_matches = Match.query.filter_by(match_status='Em partida')
@@ -495,6 +498,88 @@ def admin_dashboard_users():
                                                     Match.match_status != "Aguardando",
                                                     Match.match_status != "Em Análise",
                                                     Match.match_status != "Em Partida"))
-        return render_template('dashboard/dashboard_users.html', opened_matches=opened_matches,
+        users_list = User.query.all()
+
+        all_users = User.query.all()
+        result_dict = {}
+        labels = []
+        results = []
+        for user in all_users:
+            labels.append(user.user)
+            count = Match.query.filter_by(match_creator_username=user.user).count()
+            results.append(count)
+
+        # json_labels = jsonify({'labels': labels})
+        # json_results = jsonify({'results': results})
+        a = json.dumps(labels)
+        b = jsonify(results)
+        print(a)
+        print(b)
+        if request.method == "POST":
+            id = request.form['id']
+            redirect(url_for('match_winner', id=id))
+
+        return render_template('dashboard/dashboard.html', labels=labels, results=results, opened_matches=opened_matches,
                                ongoing_matches=ongoing_matches, on_analyzes=on_analyzes,
-                               finalized_matches=finalized_matches)
+                               finalized_matches=finalized_matches, users_list=users_list)
+
+
+@login_required
+@app.route('/ganhador_partida/<int:id>.html', methods=['GET', 'POST'])
+def match_winner(id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    elif not current_user.user == 'admin':
+        return render_template('/sala_de_jogo.html')
+    current_match = Match.query.filter_by(id=id).first()
+    match_creator = current_match.match_creator_gametag
+    competitor = current_match.competitor_gametag
+    current_match_users = [match_creator, competitor]
+    form_function_return = match_winner_form(request.form, current_match_users)
+    form = form_function_return[0]
+    match_winner_choices = form_function_return[1]
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            match_winner_analyzed = dict(match_winner_choices).get(form.match_winner.data)
+            current_match.match_status = match_winner_analyzed
+            current_match.save()
+            return redirect(url_for('admin_dashboard_users'))
+        return render_template('dashboard/match_winner.html', form=form, id=id)
+
+    return url_for('match_winner', form=form, id=id)
+
+
+@login_required
+@app.route('/data.html', methods=['GET', 'POST'])
+def data():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    elif not current_user.user == 'admin':
+        return render_template('/sala_de_jogo.html')
+
+    all_users = User.query.all()
+    result_dict = {}
+    labels = []
+    results = []
+    for user in all_users:
+
+        labels.append(user.user)
+        count = Match.query.filter_by(match_creator_username=user.user).count()
+        results.append(count)
+
+    json_labels = jsonify({'labels': labels})
+    json_results = jsonify({'results': results})
+
+    return jsonify({'labels': labels, 'results': results})
+
+
+
+@login_required
+@app.route('/dashboard_finance.html', methods=['GET', 'POST'])
+def dashboard_finance():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    elif not current_user.user == 'admin':
+        return render_template('/sala_de_jogo.html')
+
+    return render_template('dashboard/dashboard_finance.html')

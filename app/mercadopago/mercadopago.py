@@ -4,11 +4,10 @@ import mercadopago
 import json
 import os, sys
 
-ACCESS_TOKEN = "TEST-6845351963416569-061712-44cd2b44c62a0c11170bd5a901d6f32f-585866733"
-mp = mercadopago.MP(ACCESS_TOKEN)
 
-# CLIENT_ID = '7508871442888696'
-# CLIENT_SECRET = 'cxQlAwYrBb29B0SkTitHk0Rjz6UrcCbY'
+ACCESS_TOKEN = "TEST-6845351963416569-061712-44cd2b44c62a0c11170bd5a901d6f32f-585866733"
+
+mp = mercadopago.MP(ACCESS_TOKEN)
 
 
 def payment(req, **kwargs):
@@ -29,24 +28,17 @@ def payment(req, **kwargs):
                 "failure": "http://127.0.0.1:5000/resultado_compra.html",
                 "pending": "http://127.0.0.1:5000/resultado_compra.html"
             },
-        "auto_return": 'approved'
-
+        "auto_return": 'approved',
+        "external_reference": 'kak'
     }
     preference_result = mp.create_preference(preference)
+    pprint.pprint(preference_result)
+    print('------------')
+    pprint.pprint(preference)
+    print('-------------')
     product_url = preference_result['response']['init_point']
+    pprint.pprint(product_url)
     return [product_url, preference_result]
-
-
-def receive_payment_info(req, dataa):
-    paymentInfo = mp.get_payment(dataa["preference_id"])
-
-    if paymentInfo["status"] == 200:
-        print('aquii')
-    return json.dumps(paymentInfo, indent=4)
-    # else:
-    #     return None
-    #
-
 
 
 

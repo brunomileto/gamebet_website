@@ -17,6 +17,8 @@ GAME_MODE_CHOICES = [('', "Escolha um modo de jogo:"), ('1', 'Elencos Online 1')
 MATCH_RESULT_CHOICES = [('', "Qual foi o Seu Resultado, na partida?"), ('1', 'Vitória'), ('2', 'Derrota'), ('3', 'Empate')]
 
 
+
+
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -55,3 +57,16 @@ class InsertResults(FlaskForm):
 
 class GetMoneyForm(FlaskForm):
     value_wanted = IntegerField('value_wanted', validators=[InputRequired()])
+
+
+def match_winner_form(form, current_match_users):
+
+    match_winner_choices = [('', 'Defina o Ganhador!'), ('1', str(current_match_users[0])),
+                            ('2', str(current_match_users[1]))]
+
+    class MatchWinnerForm(FlaskForm):
+        match_winner = SelectField('match_winner', choices=match_winner_choices, validators=[DataRequired()])
+
+    form = MatchWinnerForm(form)
+    returned_list = [form, match_winner_choices]
+    return returned_list
