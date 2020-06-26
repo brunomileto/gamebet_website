@@ -382,7 +382,8 @@ def product_list():
 def buy_product(id_product):
     if request.method == 'POST':
         product = Product.query.filter_by(id=id_product).first()
-        function_return = mercadopago.payment(request, product=product)
+        current_user_id = current_user.id
+        function_return = mercadopago.payment(request, product=product, current_user_id=current_user_id)
         product_url = function_return[0]
         preference_id = function_return[1]['response']['id']
         product_id = function_return[1]['response']['items'][0]['id']
@@ -443,21 +444,53 @@ def mercado_pago_return():
         except Exception as err:
             print(err)
     else:
-        # ->> What to do if the user closes the redirect page. Put here! <<-
 
-        # mercadopago.receive_payment_info(request, return_data)
+        return render_template('pages/sala_de_jogo.html')
 
-        # RETURN ERROR 101 - THE RETURN_DATA['PREFERENCE_ID'] IS EMPTY!
-
-        return render_template('pages/buy_error.html')
     return render_template('pages/payment_result.html', collection_status=collection_status)
 
 
 @app.route('/test.html', methods=['GET', 'POST'])
 def test():
-    result = mercadopago.get_payment_info(req=request)
+    if request.method == "POST":
+
+        return_data = request.args.to_dict()
+        returned_data = mercadopago.get_payment_info(return_data)
+        payment_info = returned_data[0]
+        preference_id = returned_data[1]
+        user_id = returned_data[2]
+
+
+        this_sale = Sale.query.filter_by(preference_id=preference_id).first()
+
+        print(this_sale)
+        if payment_info['response']['status'] == 'approved':
+
+            this_sale.collection_status = 'aprovado'
+            this_sale.collection_id = str(payment_info['response']['id'])
+            this_sale.sale_date = datetime.datetime.now()
+
+            add_user_wallet = User.query.filter_by(id=user_id).first()
+            actual_user_wallet_value = int(add_user_wallet.wallet)
+            add_user_wallet.wallet = actual_user_wallet_value + int(this_sale.product_value)
+            add_user_wallet.save()
+
+
+        elif payment_info['response']['status'] == 'in_process':
+            this_sale.collection_status = 'processando'
+
+        elif payment_info['response']['status'] == 'rejected':
+            this_sale.collection_status = 'rejeitado'
+
+        else:
+            this_sale.collection_status = payment_info['response']['status']
+
+        this_sale.save()
+
     status_code = Response(status=200)
+
     return status_code
+
 
 @app.route('/<path>')
 def index(path):
