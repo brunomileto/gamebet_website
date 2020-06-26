@@ -103,7 +103,7 @@
                     <div class="row">
                         <div class="col-md-12">
 <!--                            <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names..">-->
-                           <div class="wrapper">
+                            <div class="wrapper">
                                 <div class="container">
                                 <div class="row">
                                   <div class="col-md-12 col-md-offset-0">
@@ -119,45 +119,45 @@
                                         <button id="alertBtn" class="btn btn-default">Alert</button>
                                       </div>
 
-                                      <table id="fresh-table" class="table">
+                                      <table id="fresh-table1" class="table">
                                           <thead>
-                        <tr>
-                            <th>Saldo Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                            <td>R$ {{ wallet }},00</td>
-                    </tr>
-                    </tbody>
-                </table>
-                          <table class="table" id="myTable">
-                    <thead>
-                        <tr>
-                            <th data-type="id">Id Compra</th>
-                            <th data-type="product">Produto</th>
-                            <th data-type="value">Valor</th>
-                            <th data-type="user_id">Usuário</th>
-                            <th data-type="datetime">Data</th>
-                            <th data-type="status">Status Compra</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                                                        <tr>
+                                                            <th>Saldo Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                            <td>R$ {{ wallet }},00</td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                                        <table id="fresh-table" class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th data-type="id">Id Compra</th>
+                                                            <th data-type="product">Produto</th>
+                                                            <th data-type="value">Valor</th>
+                                                            <th data-type="user_id">Usuário</th>
+                                                            <th data-type="datetime">Data</th>
+                                                            <th data-type="status">Status Compra</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
 
-                    {% for shop in shopping %}
-                    <tr>
-                            <td>{{ shop.id }}</td>
-                            <td>{{ shop.product_name}}</td>
-                            <td>R$ {{ shop.product_value}},00</td>
-                            <td>{{ shop.user_username}}</td>
-                            <td>{{ shop.sale_date}}</td>
-                            <td> {{shop.collection_status}} </td>
+                                                    {% for shop in shopping %}
+                                                    <tr>
+                                                            <td>{{ shop.id }}</td>
+                                                            <td>{{ shop.product_name}}</td>
+                                                            <td>R$ {{ shop.product_value}},00</td>
+                                                            <td>{{ shop.user_username}}</td>
+                                                            <td>{{ shop.sale_date}}</td>
+                                                            <td> {{shop.collection_status}} </td>
 
-                    </tr>
+                                                    </tr>
 
-                    {% endfor %}
-                    </tbody>
-                </table>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
                         </div>
                     </div>
                 </div>

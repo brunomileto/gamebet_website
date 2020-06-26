@@ -460,7 +460,6 @@ def test():
         preference_id = returned_data[1]
         user_id = returned_data[2]
 
-
         this_sale = Sale.query.filter_by(preference_id=preference_id).first()
 
         print(this_sale)
@@ -474,7 +473,6 @@ def test():
             actual_user_wallet_value = int(add_user_wallet.wallet)
             add_user_wallet.wallet = actual_user_wallet_value + int(this_sale.product_value)
             add_user_wallet.save()
-
 
         elif payment_info['response']['status'] == 'in_process':
             this_sale.collection_status = 'processando'
