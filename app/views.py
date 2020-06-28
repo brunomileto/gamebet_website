@@ -49,6 +49,8 @@ def register():
         email = request.form.get('email', '', type=str)
         name = ""
         last_name = ""
+        xbox_gametag = None
+        psn_gametag = None
         phone = None
         cpf = None
         birth_date = None
@@ -64,7 +66,8 @@ def register():
 
             pw_hash = senha  # bc.generate_password_hash(password)
 
-            user_instance = User(user, email, pw_hash, name, last_name, phone, cpf, birth_date, wallet)
+            user_instance = User(user, email, pw_hash, name, last_name, phone, cpf, birth_date, wallet, xbox_gametag,
+                                 psn_gametag)
             user_instance.save()
 
             msg = 'User created, please <a href="' + url_for('login') + '">login</a>'
