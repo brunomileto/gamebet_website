@@ -14,9 +14,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class DebugConfig():
     CSRF_ENABLED = True
     SECRET_KEY = "77tgFCdrEEdv77554##@3"
-
+    UPLOADED_IMAGES_DEST = 'uploads/images'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = True
+
 
     # Local Database URI
 

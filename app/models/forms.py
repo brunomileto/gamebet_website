@@ -5,7 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 """
 from flask_login import LoginManager
 from flask_wtf import FlaskForm
-from wtforms import StringField, RadioField, PasswordField, IntegerField, SelectField
+from wtforms import StringField, FileField, PasswordField, IntegerField, SelectField, SubmitField
 from wtforms.validators import Email, DataRequired, InputRequired
 
 login_manager = LoginManager(),
@@ -15,7 +15,6 @@ BET_VALUE_CHOICES = [('', "Escolha um valor de aposta:"), ('1', 5), ('2', 10), (
 RULES_CHOICES = [('', "Escolha uma regra, se quiser:"), ('1', 'REGRA 1'), ('2', 'REGRA 2'), ('3', 'REGRA 3')]
 GAME_MODE_CHOICES = [('', "Escolha um modo de jogo:"), ('1', 'Elencos Online 1'), ('2', 'Ultimate Team')]
 MATCH_RESULT_CHOICES = [('', "Qual foi o Seu Resultado, na partida?"), ('1', 'Vitória'), ('2', 'Derrota'), ('3', 'Empate')]
-
 
 
 
@@ -52,11 +51,15 @@ class InsertResults(FlaskForm):
     match_result = SelectField('match_result', choices=MATCH_RESULT_CHOICES, validators=[DataRequired()])
     match_creator_goals = IntegerField('match_creator_goals', validators=[InputRequired()])
     competitor_goals = IntegerField('competitor_goals', validators=[InputRequired()])
-    print = StringField('print', validators=[DataRequired()])
-
+    # print = FileField('image', validators=[FileRequired(), FileAllowed(images, 'Somente Imagens!')])
+    # images = FileField('images')
 
 class GetMoneyForm(FlaskForm):
     value_wanted = IntegerField('value_wanted', validators=[InputRequired()])
+
+
+class InsertGameTagForm(FlaskForm):
+    gametag = StringField('gametag', validators=[DataRequired()])
 
 
 def match_winner_form(form, current_match_users):

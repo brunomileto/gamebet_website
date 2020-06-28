@@ -21,9 +21,12 @@ class User(UserMixin, db.Model):
     cpf = db.Column(db.BIGINT, unique=True)
     birth_date = db.Column(db.Date)
     wallet = db.Column(db.BIGINT)
+    xbox_gametag = db.Column(db.String(120))
+    psn_gametag = db.Column(db.String(120))
     matches = db.relationship('Match', backref='match_creator')
 
-    def __init__(self, user, email, password, first_name, last_name, phone, cpf, birth_date, wallet):
+    def __init__(self, user, email, password, first_name, last_name, phone, cpf, birth_date, wallet, xbox_gametag,
+                 psn_gametag):
         self.user = user
         self.password = password
         self.email = email
@@ -33,6 +36,8 @@ class User(UserMixin, db.Model):
         self.cpf = cpf
         self.birth_date = birth_date
         self.wallet = wallet
+        self.xbox_gametag = xbox_gametag
+        self.psn_gametag = psn_gametag
 
     def __repr__(self):
         return str(self.id) + ' - ' + str(self.user)
@@ -65,11 +70,11 @@ class Match(UserMixin, db.Model):
     match_creator_match_result = db.Column(db.String(120))
     match_creator_match_creator_goals = db.Column(db.Integer)
     match_creator_competitor_goals = db.Column(db.Integer)
-    match_creator_print = db.Column(db.String(64))
+    match_creator_print = db.Column(db.String(500))
     competitor_match_result = db.Column(db.String(120))
     competitor_match_creator_goals = db.Column(db.Integer)
     competitor_competitor_goals = db.Column(db.Integer)
-    competitor_print = db.Column(db.String(64))
+    competitor_print = db.Column(db.String(500))
 
     def __init__(self, match_creator_id, competitor_id, game_name, platform, bet_value, match_creator_gametag,
                  competitor_gametag, comment, game_rules, game_mode, match_creator_username, competitor_username,

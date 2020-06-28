@@ -34,7 +34,7 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="ni ni-email-83"></i></span>
                       </div>
-                      {{ form.match_winner(class="form-control") }}
+                      {{ form.gametag(class="form-control") }}
                     </div>
                   </div>
                     <div class="row my-4">
@@ -43,20 +43,11 @@
                     </div>
                   </div>
 
-                    <div class="text-center">
-                      <a  href= {{url_for('static', filename=match_creator_print_path)}} download>
-                        <button class="btn btn-primary mt-4" type="button">Download Print de {{match_creator_gametag}} </button>
-                    </a>
-                    </div>
-                    <div class="text-center">
-                      <a  href= {{url_for('static', filename=competitor_print_path)}} download>
-                        <button class="btn btn-primary mt-4" type="button">Download Print de {{competitor_gametag}} </button>
-                    </a>
                   <div class="text-center">
-                    <button type="submit" name="register" class="btn btn-primary mt-4">Atualizar Resultados</button>
+                    <button type="submit" name="register" class="btn btn-primary mt-4">Inserir gametag</button>
                   </div>
                     <div class="text-center">
-                    <a href= {{url_for('game_room')}} class="btn btn-primary mt-4">Voltar</a>
+                    <a href= {{url_for('confirm_accept_match', id=match_id)}} class="btn btn-primary mt-4">Voltar</a>
                   </div>
                 </form>
                 </form>

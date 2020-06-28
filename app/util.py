@@ -25,6 +25,7 @@ from google.auth.transport.requests import Request
 from flask import jsonify
 from gamebet_website.app import db
 from gamebet_website.app.models.models import Match, User
+from PIL import Image
 
 
 def check_results(match_id):
@@ -60,7 +61,7 @@ def check_results(match_id):
         match_for_check.match_status = 'VITORIA COMPETIDOR = CORRETO'
         match_for_check.save()
 
-        competitor_wallet_att = User.query.filter_by(id=match_for_check.match_creator_id).first()
+        competitor_wallet_att = User.query.filter_by(id=match_for_check.competitor_id).first()
         competitor_wallet_att.wallet = int(competitor_wallet_att.wallet) + int(match_for_check.bet_value) * 2 - \
                                        int(match_for_check.bet_value * 2) * 0.1
         competitor_wallet_att.save()
@@ -90,6 +91,27 @@ def g_db_add(obj):
 def g_db_del(obj):
     if obj:
         db.session.delete(obj)
+
+
+def save_image(image, image_path, complete_path):
+    if not os.path.isdir(image_path):
+        print('criando diretorio')
+        os.makedirs(image_path)
+    else:
+        try:
+            print('removendo imagem, se existir')
+            os.remove(complete_path)
+
+        except Exception as err:
+            print(err)
+        print('salvando imagem')
+        image.save(complete_path)
+    return complete_path
+
+
+def open_image(image_path):
+    img = Image.open(image_path)
+    img.show()
 
 
 def send_email(path):

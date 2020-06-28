@@ -11,10 +11,11 @@ from sqlalchemy import or_, and_
 from gamebet_website.app import app, lm
 from gamebet_website.app.models.forms import LoginForm, RegisterForm, MatchCreationForm, InsertResults, GAME_CHOICES, \
     PLATFORM_CHOICES, BET_VALUE_CHOICES, RULES_CHOICES, GAME_MODE_CHOICES, MATCH_RESULT_CHOICES, GetMoneyForm, \
-    match_winner_form
+    match_winner_form, InsertGameTagForm
 from gamebet_website.app.models.models import User, Match, Product, Sale, GetMoney
-from gamebet_website.app.util import check_results
+from gamebet_website.app.util import check_results, save_image, open_image
 from gamebet_website.app.mercadopago import mercadopago
+from gamebet_website.app.configuration import basedir
 
 
 # provide login manager with load_user callback
@@ -152,6 +153,10 @@ def match_creation():
                 game_name = dict(GAME_CHOICES).get(form.game_name.data)
                 platform = dict(PLATFORM_CHOICES).get(form.platform.data)
                 match_creator_gametag = request.form.get('game_tag', type=str)
+                if platform == 'XOne':
+                    current_user_wallet.xbox_gametag = match_creator_gametag
+                else:
+                    current_user_wallet.psn_gametag = match_creator_gametag
                 competitor_gametag = None
                 comments = request.form.get('comments', type=str)
                 game_mode = dict(GAME_MODE_CHOICES).get(form.game_mode.data)
@@ -179,6 +184,7 @@ def match_creation():
                                      competitor_competitor_goals,
                                      competitor_print)
                 match_object.save()
+
                 matches_list = Match.query.filter_by(id=int(match_object.id)).first()
 
                 if matches_list:
@@ -217,23 +223,44 @@ def find_match():
 @app.route('/aceitar_partida/<int:id>', methods=['GET', 'POST'])
 def accept_match(id):
     match_desired = Match.query.filter_by(id=id)
+    match_desired_2 = Match.query.filter_by(id=id).first()
+    competitor = User.query.filter_by(id=current_user.id).first()
+    if match_desired_2.platform == "XOne" and competitor.xbox_gametag is None:
+        print('XBOX?')
+        gametag = 'xbox'
+    elif match_desired_2.platform == 'PS4' and competitor.psn_gametag is None:
+        print('ENTROU')
+        gametag = 'psn'
+    else:
+        gametag = 'none'
     if request.method == 'POST':
         id = request.form['id']
-        redirect(url_for('confirm_accept_match', id=id))
-    return render_template('/pages/accept_match.html', match_desired=match_desired)
+        redirect(url_for('current_matches', id=id))
+    return render_template('/pages/accept_match.html', match_desired=match_desired, gametag=gametag, match_id=id,
+                           competitor_xbox=competitor.xbox_gametag, competitor_psn=competitor.psn_gametag,
+                           competitor_id=competitor.id)
 
 
 @login_required
-@app.route('/partidas_em_aberto/<int:id>.html', methods=['GET', 'POST'])
+@app.route('/confirmar_partida/<int:id>.html', methods=['GET', 'POST'])
 def confirm_accept_match(id):
     selected_match = Match.query.filter_by(id=id).first()
+    competitor = User.query.filter_by(id=current_user.id).first()
+
     selected_match.competitor_id = current_user.id
     selected_match.competitor_username = current_user.user
+
+    if selected_match.platform == 'Xone':
+        selected_match.competitor_gametag = competitor.xbox_gametag
+    else:
+        selected_match.competitor_gametag = competitor.psn_gametag
+
     selected_match.match_status = "Em partida"
     selected_match.save()
-    competitor_wallet_update = User.query.filter_by(id=current_user.id).first()
-    competitor_wallet_update.wallet = int(competitor_wallet_update.wallet) - int(selected_match.bet_value)
-    competitor_wallet_update.save()
+
+    competitor.wallet = int(competitor.wallet) - int(selected_match.bet_value)
+    competitor.save()
+
     matches = Match.query.filter(
         or_(Match.match_creator_id == int(current_user.id), Match.competitor_id == int(current_user.id))).filter(
         or_(Match.match_status == "Em Partida", Match.match_status == "Aguardando"))
@@ -241,7 +268,33 @@ def confirm_accept_match(id):
         id = request.form['id']
         redirect(url_for('insert_results', id=id))
     return render_template('/pages/current_matches.html', matches=matches)
+#
 
+@login_required
+@app.route('/gametag.html/<int:match_id>/<int:competitor_id>/<gametag>.html', methods=['GET', 'POST'])
+def insert_competitor_gametag(match_id, competitor_id, gametag):
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+
+    competitor = User.query.filter_by(id=competitor_id).first()
+    selected_match = Match.query.filter_by(id=match_id).first()
+    form = InsertGameTagForm(request.form)
+    print('pelomenosaqui')
+    if form.validate_on_submit():
+        print('foi?')
+        if selected_match.platform == 'XOne':
+            print('talvez aqui')
+            competitor.xbox_gametag = request.form.get('gametag', type=str)
+            competitor.save()
+            return redirect(url_for('accept_match', id=match_id))
+        else:
+            print('ouaqui?')
+            competitor.psn_gametag = request.form.get('gametag', type=str)
+            competitor.save()
+            return redirect(url_for('accept_match', id=match_id))
+    print('aqui?')
+    print(form.errors)
+    return render_template('pages/insert_competitor_gametag.html', form=form, match_id=match_id, user_id=competitor_id)
 
 @login_required
 @app.route('/partidas_em_aberto.html')
@@ -261,49 +314,63 @@ def insert_results(id):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
-    content = None
-
     current_match = Match.query.filter_by(id=id).first()
     form = InsertResults(request.form)
 
     if form.validate_on_submit():
-        if int(current_user.id) == current_match.match_creator_id:
-            match_creator_match_result = dict(MATCH_RESULT_CHOICES).get(form.match_result.data)
-            match_creator_match_creator_goals = request.form.get('match_creator_goals', type=int)
-            match_creator_competitor_goals = request.form.get('competitor_goals', type=int)
-            match_creator_print = request.form.get('print', type=str)
-            current_match.match_creator_match_result = match_creator_match_result
-            current_match.match_creator_match_creator_goals = match_creator_match_creator_goals
-            current_match.match_creator_competitor_goals = match_creator_competitor_goals
-            current_match.match_creator_print = match_creator_print
+        if request.files:
+            if int(current_user.id) == current_match.match_creator_id:
+                match_creator_match_result = dict(MATCH_RESULT_CHOICES).get(form.match_result.data)
+                match_creator_match_creator_goals = request.form.get('match_creator_goals', type=int)
+                match_creator_competitor_goals = request.form.get('competitor_goals', type=int)
 
-        elif int(current_user.id) == current_match.competitor_id:
-            competitor_match_result = dict(MATCH_RESULT_CHOICES).get(form.match_result.data)
-            competitor_competitor_goals = request.form.get('match_creator_goals', type=int)
-            competitor_match_creator_goals = request.form.get('competitor_goals', type=int)
-            competitor_print = request.form.get('print', type=str)
-            current_match.competitor_match_result = competitor_match_result
-            current_match.competitor_competitor_goals = competitor_competitor_goals
-            current_match.competitor_match_creator_goals = competitor_match_creator_goals
-            current_match.competitor_print = competitor_print
-        if current_match.match_creator_match_result is not None and current_match.match_creator_match_creator_goals \
-                is not None and current_match.match_creator_competitor_goals is not None and \
-                current_match.match_creator_print is not None and current_match.competitor_match_result is not None and \
-                current_match.competitor_competitor_goals is not None and current_match.competitor_match_creator_goals \
-                is not None and current_match.competitor_print is not None:
-            current_match.match_status = "Em Análise"
-            current_match.save()
-            check_results(int(current_match.id))
-            return redirect(url_for('match_history'))
+                match_creator_print = request.files['image']
+                save_directory_complete_path = basedir + "/static/uploads/" + f'Partida_{current_match.id}'
+                complete_path = os.path.join(save_directory_complete_path,  str(current_match.match_creator_gametag) + ".jpg")
+                save_directory = "uploads/" + f'Partida_{current_match.id}' + "/" + str(current_match.match_creator_gametag) + ".jpg"
+
+                current_match.match_creator_match_result = match_creator_match_result
+                current_match.match_creator_match_creator_goals = match_creator_match_creator_goals
+                current_match.match_creator_competitor_goals = match_creator_competitor_goals
+                current_match.match_creator_print = save_directory
+                save_image(match_creator_print, save_directory_complete_path, complete_path)
+
+            elif int(current_user.id) == current_match.competitor_id:
+                competitor_match_result = dict(MATCH_RESULT_CHOICES).get(form.match_result.data)
+                competitor_competitor_goals = request.form.get('match_creator_goals', type=int)
+                competitor_match_creator_goals = request.form.get('competitor_goals', type=int)
+
+                competitor_print = request.files['image']
+                save_directory_complete_path = basedir + "/static/uploads/" + f'Partida_{current_match.id}'
+                complete_path = os.path.join(save_directory_complete_path,  str(current_match.competitor_gametag) + ".jpg")
+                save_directory = "uploads/" + f'Partida_{current_match.id}' + "/" + str(current_match.competitor_gametag) + ".jpg"
+
+                current_match.competitor_match_result = competitor_match_result
+                current_match.competitor_competitor_goals = competitor_competitor_goals
+                current_match.competitor_match_creator_goals = competitor_match_creator_goals
+                current_match.competitor_print = save_directory
+                save_image(competitor_print, save_directory_complete_path, complete_path)
 
 
-        else:
-            current_match.match_status = "Aguardando"
-            current_match.save()
+            if current_match.match_creator_match_result is not None and current_match.match_creator_match_creator_goals \
+                    is not None and current_match.match_creator_competitor_goals is not None and \
+                    current_match.match_creator_print is not None and current_match.competitor_match_result is not None and \
+                    current_match.competitor_competitor_goals is not None and current_match.competitor_match_creator_goals \
+                    is not None and current_match.competitor_print is not None:
+                current_match.match_status = "Em Análise"
+                current_match.save()
+                check_results(int(current_match.id))
+                return redirect(url_for('match_history'))
+
+            else:
+                current_match.match_status = "Aguardando"
+                current_match.save()
 
         return redirect(url_for('game_room'))
 
-    return render_template('pages/insert_results.html', form=form)
+    return render_template('pages/insert_results.html', form=form, current_user_id=current_user.id,
+                           current_match_match_creator_id=current_match.match_creator_id,
+                           current_match_competitor_id=current_match.competitor_id)
 
 
 @login_required
@@ -561,6 +628,8 @@ def admin_dashboard_users():
                                finalized_matches=finalized_matches, users_list=users_list)
 
 
+
+
 @login_required
 @app.route('/ganhador_partida/<int:id>.html', methods=['GET', 'POST'])
 def match_winner(id):
@@ -569,21 +638,46 @@ def match_winner(id):
     elif not current_user.user == 'admin':
         return render_template('/sala_de_jogo.html')
     current_match = Match.query.filter_by(id=id).first()
+
     match_creator = current_match.match_creator_gametag
     competitor = current_match.competitor_gametag
+    match_creator_print_path = current_match.match_creator_print
+    competitor_print_path = current_match.competitor_print
     current_match_users = [match_creator, competitor]
     form_function_return = match_winner_form(request.form, current_match_users)
     form = form_function_return[0]
     match_winner_choices = form_function_return[1]
+
     if request.method == 'POST':
+
         if form.validate_on_submit():
             match_winner_analyzed = dict(match_winner_choices).get(form.match_winner.data)
             current_match.match_status = match_winner_analyzed
+
+            if current_match.platform == 'XOne':
+                user_winner = User.query.filter_by(xbox_gametag=match_winner_analyzed).first()
+                user_winner.wallet = user_winner.wallet + current_match.bet_value*2 - current_match.bet_value*0.2
+                user_winner.save()
+
+            elif current_match.platform == 'PS4':
+
+                user_winner = User.query.filter_by(psn_gametag=match_winner_analyzed).first()
+                user_winner.wallet = user_winner.wallet + 2*current_match.bet_value - current_match.bet_value*0.2
+                user_winner.save()
             current_match.save()
             return redirect(url_for('admin_dashboard_users'))
-        return render_template('dashboard/match_winner.html', form=form, id=id)
+        return render_template('dashboard/match_winner.html', form=form, id=id, match_creator_gametag=match_creator,
+                               competitor_gametag=competitor, match_creator_print_path=match_creator_print_path,
+                               competitor_print_path=competitor_print_path)
 
-    return url_for('match_winner', form=form, id=id)
+    return url_for('match_winner', form=form, id=id, match_creator_gametag=match_creator, competitor_gametag=competitor)
+
+
+# @app.route('/<path>.html', methods=['GET', 'POST'])
+# def open_a_image(path):
+#     print(path)
+#     return url_for('match_winner')
+
 
 
 @login_required

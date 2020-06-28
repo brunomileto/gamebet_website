@@ -486,9 +486,9 @@ The above copyright notice and this permission notice shall be included in all c
                                                 <th class="data-field">Plataforma</th>
                                                 <th class="data-field">Regras</th>
                                                 <th class="data-field">Comentários</th>
+                                                <th class="data-field">Status Partida</th>
                                                 <th class="data-field">Comprovante Criador</th>
                                                 <th class="data-field">Comprovante Competidor</th>
-                                                <th class="data-field">Status Partida</th>
 
                                                 <th data-field="actions">Actions</th>
 
@@ -510,16 +510,25 @@ The above copyright notice and this permission notice shall be included in all c
                                                     <td>{{ match.platform}}</td>
                                                     <td>{{ match.game_rules}}</td>
                                                     <td>{{ match.comment}}</td>
-                                                    <td>{{ match.match_creator_print}}</td>
-                                                    <td>{{ match.competitor_print}}</td>
                                                   <td>{{ match.match_status}}</td>
+                                                    <td>
+                                                        <form action="/" method="POST">
+                                                        <input type="hidden" name="id" value="{{ match.id }}"/>
+                                                        <input type="submit" class="btn btn-sm btn-outline-default" value="Avaliar"/>
+                                                        </form>
+                                                    </td>
+                                                    <td>
+                                                        <form action="/" method="POST">
+                                                        <input type="hidden" name="id" value="{{ match.id }}"/>
+                                                        <input type="submit" class="btn btn-sm btn-outline-default" value="Avaliar"/>
+                                                        </form>
+                                                    </td>
                                                     <td>
                                                         <form action="{{url_for('match_winner', id=match.id)}}" method="POST">
                                                         <input type="hidden" name="id" value="{{ match.id }}"/>
-                                                        <input type="submit" class="btn btn-sm btn-outline-default" value="Editar"/>
+                                                        <input type="submit" class="btn btn-sm btn-outline-default" value="Lançar Resultado"/>
                                                         </form>
                                                     </td>
-
                                                 </tr>
 
                                               {% endfor %}

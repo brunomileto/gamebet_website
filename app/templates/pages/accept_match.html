@@ -145,12 +145,32 @@
                                                         <td>{{ items.match_creator_username}}</td>
                                                         <td>{{ items.game_rules}}</td>
                                                         <td>{{ items.comment}}</td>
+                                                    {% if gametag == 'xbox' %}
+                                                        {% if competitor_xbox is none or competitor_xbox == ""%}
+                                                        <td>
+                                                            <form action="{{url_for('insert_competitor_gametag', match_id=match_id, gametag=gametag, competitor_id=competitor_id)}}" method="POST">
+                                                            <input type="hidden" name="id"/>
+                                                            <input type="submit" class="btn btn-sm btn-outline-default" value="Aceitar"/>
+                                                            </form>
+                                                        </td>
+                                                        {% endif %}
+                                                    {% elif gametag == 'psn' %}
+                                                        {% if competitor_psn is none or competitor_psn == ""%}
+                                                         <td>
+                                                            <form action="{{url_for('insert_competitor_gametag', match_id=match_id, gametag=gametag, competitor_id=competitor_id)}}" method="POST">
+                                                            <input type="hidden" name="id" />
+                                                            <input type="submit" class="btn btn-sm btn-outline-default" value="Aceitar"/>
+                                                            </form>
+                                                        </td>
+                                                        {% endif %}
+                                                    {% else %}
                                                         <td>
                                                             <form action="{{ url_for('confirm_accept_match', id = items.id) }}" method="POST">
                                                             <input type="hidden" name="id" value="{{ items.id }}"/>
                                                             <input type="submit" class="btn btn-sm btn-outline-default" value="Aceitar"/>
                                                             </form>
                                                         </td>
+                                                    {% endif %}
                                                 </tr>
 
                                                 {% endfor %}
