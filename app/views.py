@@ -253,7 +253,7 @@ def confirm_accept_match(id):
     selected_match.competitor_id = current_user.id
     selected_match.competitor_username = current_user.user
 
-    if selected_match.platform == 'Xone':
+    if selected_match.platform == 'XOne':
         selected_match.competitor_gametag = competitor.xbox_gametag
     else:
         selected_match.competitor_gametag = competitor.psn_gametag
