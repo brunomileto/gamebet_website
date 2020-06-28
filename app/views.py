@@ -490,26 +490,7 @@ def mercado_pago_return():
     print(return_data)
     if return_data:
         try:
-            current_sale = Sale.query.filter_by(preference_id=return_data['preference_id']).first()
-            current_sale.collection_id = return_data['collection_id']
-            current_sale.collection_status = return_data['collection_status']
-            current_sale.payment_type = return_data['payment_type']
-            current_sale.merchant_order_id = return_data['merchant_order_id']
-            current_sale.preference_id = return_data['preference_id']
-            current_sale.site_id = return_data['site_id']
-            current_sale.processing_mode = return_data['processing_mode']
-            current_sale.collection_status = return_data['collection_status']
-            current_sale.sale_date = datetime.datetime.now()
-            current_sale.save()
-
             collection_status = return_data['collection_status']
-
-            add_user_wallet = User.query.filter_by(id=current_sale.user_id).first()
-            actual_user_wallet_value = add_user_wallet.wallet
-            new_user_wallet_value = actual_user_wallet_value + current_sale.product_value
-            add_user_wallet.wallet = new_user_wallet_value
-            add_user_wallet.save()
-
             return render_template('pages/payment_result.html', collection_status=collection_status)
         except Exception as err:
             print(err)
