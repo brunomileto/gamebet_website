@@ -370,7 +370,7 @@ def insert_results(id):
                 current_match.save()
 
         return redirect(url_for('game_room'))
-
+    print(form.errors)
     return render_template('pages/insert_results.html', form=form, current_user_id=current_user.id,
                            current_match_match_creator_id=current_match.match_creator_id,
                            current_match_competitor_id=current_match.competitor_id)

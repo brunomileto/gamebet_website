@@ -42,14 +42,13 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="ni ni-email-83"></i></span>
                       </div>
+
                       {% if current_user_id == current_match_match_creator_id %}
-
+<!--                      {{ form.hidden_tag() }}-->
                       {{ form.match_creator_goals(class="form-control", placeholder = "Seus Gols") }}
-
                       {% else %}
-
+<!--                      {{ form.hidden_tag() }}-->
                       {{ form.competitor_goals(class="form-control", placeholder = "Seus Gols") }}
-
                       {% endif %}
 
                     </div>
@@ -59,13 +58,14 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="ni ni-email-83"></i></span>
                       </div>
+                       {{ form.hidden_tag() }}
                       {% if current_user_id == current_match_match_creator_id %}
 
-                      {{ form.match_creator_goals(class="form-control", placeholder = "Seus Gols") }}
+                      {{ form.competitor_goals(class="form-control", placeholder = "Gols do Oponente") }}
 
                       {% else %}
 
-                      {{ form.competitor_goals(class="form-control", placeholder = "Numero Gols Oponente") }}
+                      {{ form.match_creator_goals(class="form-control", placeholder = "Gols do Oponente") }}
 
                       {% endif %}
 
