@@ -326,8 +326,8 @@ def insert_results(id):
                 match_creator_match_result = dict(MATCH_RESULT_CHOICES).get(form.match_result.data)
                 match_creator_match_creator_goals = request.form.get('match_creator_goals', type=int)
                 match_creator_competitor_goals = request.form.get('competitor_goals', type=int)
-
                 match_creator_print = request.files['image']
+
                 save_directory_complete_path = basedir + "/static/uploads/" + f'Partida_{current_match.id}'
                 complete_path = os.path.join(save_directory_complete_path,  str(current_match.match_creator_gametag) + ".jpg")
                 save_directory = "uploads/" + f'Partida_{current_match.id}' + "/" + str(current_match.match_creator_gametag) + ".jpg"
@@ -342,8 +342,8 @@ def insert_results(id):
                 competitor_match_result = dict(MATCH_RESULT_CHOICES).get(form.match_result.data)
                 competitor_competitor_goals = request.form.get('match_creator_goals', type=int)
                 competitor_match_creator_goals = request.form.get('competitor_goals', type=int)
-
                 competitor_print = request.files['image']
+
                 save_directory_complete_path = basedir + "/static/uploads/" + f'Partida_{current_match.id}'
                 complete_path = os.path.join(save_directory_complete_path,  str(current_match.competitor_gametag) + ".jpg")
                 save_directory = "uploads/" + f'Partida_{current_match.id}' + "/" + str(current_match.competitor_gametag) + ".jpg"

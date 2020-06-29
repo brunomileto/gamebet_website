@@ -97,16 +97,15 @@ def save_image(image, image_path, complete_path):
     if not os.path.isdir(image_path):
         print('criando diretorio')
         os.makedirs(image_path)
-    else:
-        try:
-            print('removendo imagem, se existir')
-            os.remove(complete_path)
 
-        except Exception as err:
-            print(err)
-        print('salvando imagem')
-        image.save(complete_path)
-    return complete_path
+    try:
+        print('removendo imagem, se existir')
+        os.remove(complete_path)
+
+    except Exception as err:
+        print(err)
+    print('salvando imagem')
+    image.save(complete_path)
 
 
 def open_image(image_path):
