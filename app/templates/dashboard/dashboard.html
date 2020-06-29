@@ -46,7 +46,7 @@ The above copyright notice and this permission notice shall be included in all c
       <div class="sidebar-wrapper">
         <ul class="nav">
           <li class="nav-item active  ">
-            <a class="nav-link" href={{url_for('admin_dashboard_users')}}>
+            <a class="nav-link" href={{url_for('admin_dashboard')}}>
               <i class="material-icons">dashboard</i>
               <p>Dashboard</p>
             </a>
@@ -254,9 +254,9 @@ The above copyright notice and this permission notice shall be included in all c
                     <div class="ct-chart ct-octave"></div>
                 </div>
                 <div class="card-body">
-                  <h4 class="card-title">Daily Sales</h4>
+                  <h4 class="card-title">Partidas Criadas por Usuário</h4>
                   <p class="card-category">
-                    <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today sales.</p>
+                    <span class="text-success"><i class="fa fa-long-arrow-up"></i> xx% </span> xxx.</p>
                 </div>
                 <div class="card-footer">
                   <div class="stats">
@@ -487,8 +487,6 @@ The above copyright notice and this permission notice shall be included in all c
                                                 <th class="data-field">Regras</th>
                                                 <th class="data-field">Comentários</th>
                                                 <th class="data-field">Status Partida</th>
-                                                <th class="data-field">Comprovante Criador</th>
-                                                <th class="data-field">Comprovante Competidor</th>
 
                                                 <th data-field="actions">Actions</th>
 
@@ -511,18 +509,6 @@ The above copyright notice and this permission notice shall be included in all c
                                                     <td>{{ match.game_rules}}</td>
                                                     <td>{{ match.comment}}</td>
                                                   <td>{{ match.match_status}}</td>
-                                                    <td>
-                                                        <form action="/" method="POST">
-                                                        <input type="hidden" name="id" value="{{ match.id }}"/>
-                                                        <input type="submit" class="btn btn-sm btn-outline-default" value="Avaliar"/>
-                                                        </form>
-                                                    </td>
-                                                    <td>
-                                                        <form action="/" method="POST">
-                                                        <input type="hidden" name="id" value="{{ match.id }}"/>
-                                                        <input type="submit" class="btn btn-sm btn-outline-default" value="Avaliar"/>
-                                                        </form>
-                                                    </td>
                                                     <td>
                                                         <form action="{{url_for('match_winner', id=match.id)}}" method="POST">
                                                         <input type="hidden" name="id" value="{{ match.id }}"/>
@@ -564,8 +550,6 @@ The above copyright notice and this permission notice shall be included in all c
                                                 <th class="data-field">Plataforma</th>
                                                 <th class="data-field">Regras</th>
                                                 <th class="data-field">Comentários</th>
-                                                <th class="data-field">Comprovante Criador</th>
-                                                <th class="data-field">Comprovante Competidor</th>
                                                 <th class="data-field">Ganhador</th>
 
                                                 <th data-field="actions">Actions</th>
@@ -588,8 +572,6 @@ The above copyright notice and this permission notice shall be included in all c
                                                     <td>{{ match.platform}}</td>
                                                     <td>{{ match.game_rules}}</td>
                                                     <td>{{ match.comment}}</td>
-                                                    <td>{{ match.match_creator_print}}</td>
-                                                    <td>{{ match.competitor_print}}</td>
                                                     <td>{{ match.match_status}}</td>
                                                     <td>
                                                         <form action="/" method="POST">

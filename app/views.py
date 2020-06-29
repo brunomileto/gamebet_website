@@ -590,8 +590,8 @@ def index(path):
             return render_template('pages/error-404.html')
 
 
-@app.route('/admin_dashboard.html')
-def admin_dashboard():
+@app.route('/admin_dashboard_finance.html')
+def admin_dashboard_finance():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     if current_user.user == 'admin':
@@ -603,7 +603,7 @@ def admin_dashboard():
 
 @login_required
 @app.route('/dashboard.html', methods=['GET', 'POST'])
-def admin_dashboard_users():
+def admin_dashboard():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     elif not current_user.user == 'admin':
@@ -679,7 +679,7 @@ def match_winner(id):
                 user_winner.wallet = user_winner.wallet + 2*current_match.bet_value - current_match.bet_value*0.2
                 user_winner.save()
             current_match.save()
-            return redirect(url_for('admin_dashboard_users'))
+            return redirect(url_for('admin_dashboard'))
         return render_template('dashboard/match_winner.html', form=form, id=id, match_creator_gametag=match_creator,
                                competitor_gametag=competitor, match_creator_print_path=match_creator_print_path,
                                competitor_print_path=competitor_print_path)
