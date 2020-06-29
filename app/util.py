@@ -32,7 +32,7 @@ def check_results(match_id):
     match_for_check = Match.query.filter_by(id=match_id).first()
 
     if match_for_check.match_creator_match_result == 'Empate' and match_for_check.competitor_match_result == "Empate":
-        match_for_check.match_status = 'EMPATE = CORRETO'
+        match_for_check.match_status = 'Empate'
         match_for_check.save()
 
         match_creator_wallet_att = User.query.filter_by(id=match_for_check.match_creator_id).first()
@@ -48,7 +48,7 @@ def check_results(match_id):
         match_for_check.save()
 
     if match_for_check.match_creator_match_result == 'Vitória' and match_for_check.competitor_match_result == "Derrota":
-        match_for_check.match_status = 'VITORIA CRIADOR = CORRETO'
+        match_for_check.match_status = match_for_check.match_creator_gametag
         match_for_check.save()
 
         match_creator_wallet_att = User.query.filter_by(id=match_for_check.match_creator_id).first()
@@ -58,7 +58,7 @@ def check_results(match_id):
 
 
     elif match_for_check.match_creator_match_result == 'Derrota' and match_for_check.competitor_match_result == "Vitória":
-        match_for_check.match_status = 'VITORIA COMPETIDOR = CORRETO'
+        match_for_check.match_status = match_for_check.competitor_gametag
         match_for_check.save()
 
         competitor_wallet_att = User.query.filter_by(id=match_for_check.competitor_id).first()

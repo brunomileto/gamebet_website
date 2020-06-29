@@ -1,0 +1,26 @@
+{% extends "layouts/default-fullscreen.html" %}
+
+{% block title %} Profile Page {% endblock %} 
+
+{% block content %}
+  
+              <h3>
+                Nome Usuário: {{ current_user.user }}
+              </h3>
+              <div class="h6 font-weight-300">
+                  Email: {{ current_user.email }}
+              </div>
+            </div>
+            <div class="mt-5 py-5 border-top text-center">
+              <div class="row justify-content-center">
+                <div class="col-lg-9">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+{% endblock content %}

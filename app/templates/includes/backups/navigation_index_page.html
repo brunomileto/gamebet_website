@@ -30,7 +30,7 @@
               {% if current_user.is_authenticated %}
 
                 <li class="nav-item">
-                  <a class="nav-link nav-link-icon" href={{url_for('game_room')}} data-toggle="tooltip"
+                  <a class="nav-link nav-link-icon" href={{url_for('profile')}} data-toggle="tooltip"
                      title="Sala de Jogos de [{{ current_user.user }}]">
                     <i class="fa fa-gamepad" aria-hidden="true"></i>  Sala de Jogos
                     <span class="nav-link-inner--text d-lg-none"> Sala de Jogos</span>

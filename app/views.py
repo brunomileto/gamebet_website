@@ -107,7 +107,7 @@ def login():
             if user:
                 if user.password == password:
                     login_user(user)
-                    return redirect(url_for('game_room'))
+                    return redirect(url_for('profile'))
                 else:
                     msg = "Wrong password. Please try again."
             else:
@@ -119,13 +119,15 @@ def login():
 # App main route + generic routing
 @login_required
 @app.route('/sala_de_jogo.html')
-def game_room():
+def profile():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-
-    return render_template('pages/game_room.html')
+    user_statistics = basic_user_statistics(current_user.id)
+    actual_wallet_value = user_statistics[0]
+    total_matches_played = user_statistics[1]
+    return render_template('pages/profile.html', user_wallet=actual_wallet_value, total_matches=total_matches_played)
     # try:
-    #     return render_template('pages/game_room.html', form=form)
+    #     return render_template('pages/profile.html', form=form)
     #
     #
     # except:
@@ -193,13 +195,13 @@ def match_creation():
                 if matches_list:
                     current_user_wallet.wallet = int(current_user_wallet.wallet) - int(bet_value)
                     current_user_wallet.save()
-                    return redirect(url_for('game_room'))
+                    return redirect(url_for('profile'))
                 else:
                     msg = 'Partida não foi criada, cheque as informações inseridas'
     return render_template('pages/match_creation.html', form=form, msg=msg)
     # try:
     #     form = MatchCreationForm(request.form)
-    #     return render_template('pages/game_room.html', form=form)
+    #     return render_template('pages/profile.html', form=form)
     #
     #
     # except:
@@ -219,7 +221,11 @@ def find_match():
             return redirect(url_for('product_list'))
         else:
             return redirect(url_for('accept_match', id=id))
-    return render_template('/pages/find_match.html', available_matches=available_matches)
+    user_statistics = basic_user_statistics(current_user.id)
+    actual_wallet_value = user_statistics[0]
+    total_matches_played = user_statistics[1]
+    return render_template('/pages/find_match.html', available_matches=available_matches,
+                           user_wallet=actual_wallet_value, total_matches=total_matches_played)
 
 
 @login_required
@@ -239,9 +245,13 @@ def accept_match(id):
     if request.method == 'POST':
         id = request.form['id']
         redirect(url_for('current_matches', id=id))
+    user_statistics = basic_user_statistics(current_user.id)
+    actual_wallet_value = user_statistics[0]
+    total_matches_played = user_statistics[1]
     return render_template('/pages/accept_match.html', match_desired=match_desired, gametag=gametag, match_id=id,
                            competitor_xbox=competitor.xbox_gametag, competitor_psn=competitor.psn_gametag,
-                           competitor_id=competitor.id)
+                           competitor_id=competitor.id, user_wallet=actual_wallet_value,
+                           total_matches=total_matches_played)
 
 
 @login_required
@@ -270,7 +280,11 @@ def confirm_accept_match(id):
     if request.method == "POST":
         id = request.form['id']
         redirect(url_for('insert_results', id=id))
-    return render_template('/pages/current_matches.html', matches=matches)
+    user_statistics = basic_user_statistics(current_user.id)
+    actual_wallet_value = user_statistics[0]
+    total_matches_played = user_statistics[1]
+    return render_template('/pages/current_matches.html', matches=matches, user_wallet=actual_wallet_value,
+                           total_matches=total_matches_played)
 #
 
 @login_required
@@ -308,7 +322,11 @@ def current_matches():
     if request.method == "POST":
         id = request.form['id']
         redirect(url_for('insert_results', id=id))
-    return render_template('/pages/current_matches.html', matches=matches)
+    user_statistics = basic_user_statistics(current_user.id)
+    actual_wallet_value = user_statistics[0]
+    total_matches_played = user_statistics[1]
+    return render_template('/pages/current_matches.html', matches=matches, user_wallet=actual_wallet_value,
+                           total_matches=total_matches_played)
 
 
 @login_required
@@ -369,7 +387,7 @@ def insert_results(id):
                 current_match.match_status = "Aguardando"
                 current_match.save()
 
-        return redirect(url_for('game_room'))
+        return redirect(url_for('profile'))
     print(form.errors)
     return render_template('pages/insert_results.html', form=form, current_user_id=current_user.id,
                            current_match_match_creator_id=current_match.match_creator_id,
@@ -428,8 +446,12 @@ def match_history():
                                      Match.competitor_id == int(current_user.id))).filter(
         and_(Match.match_status != "Procurando", Match.match_status != "Aguardando",
              Match.match_status != "Em Análise", Match.match_status != "Em Partida"))
+    user_statistics = basic_user_statistics(current_user.id)
+    actual_wallet_value = user_statistics[0]
+    total_matches_played = user_statistics[1]
 
-    return render_template('/pages/match_history.html', matches=matches)
+    return render_template('/pages/match_history.html', matches=matches, user_wallet=actual_wallet_value,
+                           total_matches=total_matches_played)
 
 
 @login_required
@@ -438,14 +460,22 @@ def user_wallet():
     shopping = Sale.query.filter_by(user_id=current_user.id)
     get_wallet = User.query.filter_by(id=current_user.id).first()
     wallet_value = get_wallet.wallet
-    return render_template('/pages/wallet.html', shopping=shopping, wallet=wallet_value)
+    user_statistics = basic_user_statistics(current_user.id)
+    actual_wallet_value = user_statistics[0]
+    total_matches_played = user_statistics[1]
+    return render_template('/pages/wallet.html', shopping=shopping, wallet=wallet_value,
+                           user_wallet=actual_wallet_value, total_matches=total_matches_played)
 
 
 @login_required
 @app.route('/comprar.html')
 def product_list():
     products_list = Product.query.all()
-    return render_template('/pages/products_list.html', products_list=products_list)
+    user_statistics = basic_user_statistics(current_user.id)
+    actual_wallet_value = user_statistics[0]
+    total_matches_played = user_statistics[1]
+    return render_template('/pages/products_list.html', products_list=products_list, user_wallet=actual_wallet_value,
+                           total_matches=total_matches_played)
 
 
 @app.route('/buy/<int:id_product>', methods=['GET', 'POST'])
@@ -698,3 +728,13 @@ def dashboard_finance():
         return render_template('/sala_de_jogo.html')
 
     return render_template('dashboard/dashboard_finance.html')
+
+
+def basic_user_statistics(id):
+    user = User.query.filter_by(id=id).first()
+    actual_user_wallet = user.wallet
+    finished_matches = Match.query.filter(or_(Match.match_creator_id == int(current_user.id),
+                                     Match.competitor_id == int(current_user.id))).filter(
+        and_(Match.match_status != "Procurando", Match.match_status != "Aguardando",
+             Match.match_status != "Em Análise", Match.match_status != "Em Partida")).count()
+    return [actual_user_wallet, finished_matches]

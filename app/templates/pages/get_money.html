@@ -1,4 +1,4 @@
-{% extends "layouts/default-fullscreen.html" %}
+{% extends "layouts/default-fullscreen_forms.html" %}
 
 {% block title %} Match Creation {% endblock %}
 
@@ -56,7 +56,7 @@
                     <button type="submit" name="match_creation" class="btn btn-primary mt-4">Criar</button>
                   </div>
                   <div class="text-center">
-                    <a href= {{url_for('game_room')}} class="btn btn-primary mt-4">Votlar</a>
+                    <a href= {{url_for('profile')}} class="btn btn-primary mt-4">Votlar</a>
                   </div>
                 </form>
               </div>
