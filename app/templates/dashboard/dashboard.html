@@ -10,7 +10,7 @@ Coded by Creative Tim
 =========================================================
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 
 <head>
   <meta charset="utf-8" />
@@ -178,121 +178,115 @@ The above copyright notice and this permission notice shall be included in all c
       <div class="content">
         <div class="container-fluid">
           <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-lg-4 col-md-6 col-sm-6">
               <div class="card card-stats">
-                <div class="card-header card-header-warning card-header-icon">
+                <div class="card-header card-header-success card-header-icon">
                   <div class="card-icon">
-                    <i class="material-icons">content_copy</i>
+                    <i class="material-icons">attach_money</i>
                   </div>
-                  <p class="card-category">Used Space</p>
-                  <h3 class="card-title">49/50
-                    <small>GB</small>
+                  <p class="card-category">Faturamento Total Comissões</p>
+                  <h3 class="card-title">
+                    <small>R$ </small>
+                    {{total_commission}}
                   </h3>
                 </div>
                 <div class="card-footer">
                   <div class="stats">
-                    <i class="material-icons text-danger">warning</i>
-                    <a href="javascript:;">Get More Space...</a>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-lg-4 col-md-6 col-sm-6">
               <div class="card card-stats">
-                <div class="card-header card-header-success card-header-icon">
+                <div class="card-header card-header-warning card-header-icon">
                   <div class="card-icon">
                     <i class="material-icons">store</i>
                   </div>
-                  <p class="card-category">Revenue</p>
-                  <h3 class="card-title">$34,245</h3>
+                  <p class="card-category">Depósitos Totais</p>
+                  <h3 class="card-title">
+                  <small>R$ </small>
+                    {{ total_sales }}
+                  </h3>
                 </div>
                 <div class="card-footer">
-                  <div class="stats">
-                    <i class="material-icons">date_range</i> Last 24 Hours
-                  </div>
                 </div>
               </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-lg-4 col-md-6 col-sm-6">
               <div class="card card-stats">
                 <div class="card-header card-header-danger card-header-icon">
                   <div class="card-icon">
-                    <i class="material-icons">info_outline</i>
+                    <i class="material-icons">trending_down</i>
                   </div>
-                  <p class="card-category">Fixed Issues</p>
-                  <h3 class="card-title">75</h3>
+                  <p class="card-category">Retiradas Totais</p>
+                  <h3 class="card-title">
+                    <small>R$ </small>
+                    {{ total_money_requests }}
+                  </h3>
                 </div>
                 <div class="card-footer">
-                  <div class="stats">
-                    <i class="material-icons">local_offer</i> Tracked from Github
-                  </div>
                 </div>
               </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6">
-              <div class="card card-stats">
-                <div class="card-header card-header-info card-header-icon">
-                  <div class="card-icon">
-                    <i class="fa fa-twitter"></i>
-                  </div>
-                  <p class="card-category">Followers</p>
-                  <h3 class="card-title">+245</h3>
-                </div>
-                <div class="card-footer">
-                  <div class="stats">
-                    <i class="material-icons">update</i> Just Updated
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
           <div class="row">
-            <div class="col-md-4">
+            <div class="col">
               <div class="card card-chart" >
-                <div class="card-header card-header-success" >
+                <div class="card-header card-header-info" >
                     <!-- ----------------- -->
-                    <div class="ct-chart ct-octave"></div>
+                    <div class="ct-chart ct-octave" id="match_creation_chart"></div>
                 </div>
                 <div class="card-body">
-                  <h4 class="card-title">Partidas Criadas por Usuário</h4>
+                  <h4 class="card-title">Partidas Criadas</h4>
                   <p class="card-category">
-                    <span class="text-success"><i class="fa fa-long-arrow-up"></i> xx% </span> xxx.</p>
+                    <span class="text-success"></span> Últimas 12 semanas</p>
                 </div>
                 <div class="card-footer">
                   <div class="stats">
-                    <i class="material-icons">access_time</i> updated 4 minutes ago
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col-md-4">
+            <div class="col">
               <div class="card card-chart">
                 <div class="card-header card-header-warning">
-                  <div class="ct-chart" id="websiteViewsChart"></div>
+                  <div class="ct-chart ct-octave" id="opened_matches_chart"></div>
                 </div>
                 <div class="card-body">
-                  <h4 class="card-title">Email Subscriptions</h4>
-                  <p class="card-category">Last Campaign Performance</p>
+                  <h4 class="card-title">Partidas Aguardando Jogadores</h4>
+                  <p class="card-category">Partidas abertas e que estão aguardando aceite de algum jogador, nas últimas 12 semanas</p>
                 </div>
                 <div class="card-footer">
                   <div class="stats">
-                    <i class="material-icons">access_time</i> campaign sent 2 days ago
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col-md-4">
+              <div class="col">
               <div class="card card-chart">
                 <div class="card-header card-header-danger">
-                  <div class="ct-chart" id="completedTasksChart"></div>
+                  <div class="ct-chart ct-octave"  id="ongoing_matches_chart"></div>
                 </div>
                 <div class="card-body">
-                  <h4 class="card-title">Completed Tasks</h4>
-                  <p class="card-category">Last Campaign Performance</p>
+                  <h4 class="card-title">Partidas em Disputa</h4>
+                  <p class="card-category">Partidas sendo realizadas ou, aguardando lançamento de resultados</p>
                 </div>
                 <div class="card-footer">
                   <div class="stats">
-                    <i class="material-icons">access_time</i> campaign sent 2 days ago
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card card-chart">
+                <div class="card-header card-header-success">
+                  <div class="ct-chart ct-octave"  id="finalized_matches_chart"></div>
+                </div>
+                <div class="card-body">
+                  <h4 class="card-title">Partidas Finalizadas</h4>
+                  <p class="card-category">Todas as partidas finalizadas nas últimas 12 semanas</p>
+                </div>
+                <div class="card-footer">
+                  <div class="stats">
                   </div>
                 </div>
               </div>
@@ -328,6 +322,12 @@ The above copyright notice and this permission notice shall be included in all c
                         <li class="nav-item">
                           <a class="nav-link" href="#finalized_matches" data-toggle="tab">
                             <i class="material-icons">cloud</i> Finalizadas
+                            <div class="ripple-container"></div>
+                          </a>
+                        </li>
+                          <li class="nav-item">
+                          <a class="nav-link" href="#edit_matches" data-toggle="tab">
+                            <i class="material-icons">cloud</i> Todas as Partidas
                             <div class="ripple-container"></div>
                           </a>
                         </li>
@@ -445,8 +445,8 @@ The above copyright notice and this permission notice shall be included in all c
                                                     <td>{{ match.game_rules}}</td>
                                                     <td>{{ match.comment}}</td>
                                                     <td>
-                                                        <form action="/" method="POST">
-                                                        <input type="hidden" name="id" value="{{ match.id }}"/>
+                                                        <form action="{{url_for('edit_matches', id=match.id)}}" method="POST">
+                                                        <input type="hidden" name="id" value="{{match.id}}"/>
                                                         <input type="submit" class="btn btn-sm btn-outline-default" value="Editar"/>
                                                         </form>
                                                     </td>
@@ -590,6 +590,72 @@ The above copyright notice and this permission notice shall be included in all c
                                     </div>
                                   </div>
                     </div>
+                      <div class="tab-pane" id="edit_matches">
+                      <div class="container">
+<!--                                  <div class="row">-->
+                                    <div class="col-md-12 col-md-offset-0">
+                                      <div class="description">
+                                        </div>
+
+                                      <div class="fresh-table2">
+                                      <!--
+                                        Available colors for the full background: full-color-blue, full-color-azure, full-color-green, full-color-red, full-color-orange
+                                        Available colors only for the toolbar: toolbar-color-blue, toolbar-color-azure, toolbar-color-green, toolbar-color-red, toolbar-color-orange
+                                      -->
+
+                                          <table id="fresh-table6" class="table">
+
+                                              <thead class="text-warning">
+
+                                                <th class="data-field">ID</th>
+                                                <th class="data-field">Usuário Criador</th>
+                                                <th class="data-field">Usuário Competidor</th>
+                                                <th class="data-field">Jogo</th>
+                                                <th class="data-field">Valor</th>
+                                                <th class="data-field">Plataforma</th>
+                                                <th class="data-field">Regras</th>
+                                                <th class="data-field">Comentários</th>
+                                                <th class="data-field">Ganhador</th>
+
+                                                <th data-field="actions">Actions</th>
+
+
+                                              </thead>
+
+
+                                              <tbody>
+
+                                              {% for match in all_matches %}
+
+                                                <tr>
+
+                                                    <td>{{ match.id }}</td>
+                                                    <td>{{ match.match_creator_username}}</td>
+                                                    <td>{{ match.competitor_username}}</td>
+                                                    <td>{{ match.game_name}}</td>
+                                                    <td>R$ {{ match.bet_value}},00</td>
+                                                    <td>{{ match.platform}}</td>
+                                                    <td>{{ match.game_rules}}</td>
+                                                    <td>{{ match.comment}}</td>
+                                                    <td>{{ match.match_status}}</td>
+                                                    <td>
+                                                        <form action={{url_for('edit_matches', id=match.id)}} method="POST">
+                                                        <input type="hidden" name="id" value="{{ match.id }}"/>
+                                                        <input type="submit" class="btn btn-sm btn-outline-default" value="Editar"/>
+                                                        </form>
+                                                    </td>
+
+                                                </tr>
+
+                                              {% endfor %}
+
+                                              </tbody>
+                                        </table>
+                                      </div>
+                                    </div>
+                                  </div>
+                    </div>
+
                   </div>
                 </div>
               </div>
@@ -642,53 +708,15 @@ The above copyright notice and this permission notice shall be included in all c
                                                     <td>{{ user.email}}</td>
                                                     <td>R$ {{ user.wallet}},00</td>
                                                     <td>
-                                                        <form action="/" method="POST">
-                                                        <input type="hidden" name="id" value="{{ user.id }}"/>
-                                                        <input type="submit" class="btn btn-sm btn-outline-default" value="Editar"/>
+                                                      <form action="{{url_for('change_user_status', id=user.id)}}" method="POST">
+                                                        <input type="submit" class="btn btn-sm btn-outline-default" value="Bloquear / Desbloquear"/>
                                                         </form>
                                                     </td>
 
                                                 </tr>
 
                                               {% endfor %}
-
                                           </tbody>
-
-
-
-<!--                  <table class="table table-hover">-->
-<!--                    <thead class="text-warning">-->
-<!--                      <th>ID</th>-->
-<!--                      <th>Name</th>-->
-<!--                      <th>Salary</th>-->
-<!--                      <th>Country</th>-->
-<!--                    </thead>-->
-<!--                    <tbody>-->
-<!--                      <tr>-->
-<!--                        <td>1</td>-->
-<!--                        <td>Dakota Rice</td>-->
-<!--                        <td>$36,738</td>-->
-<!--                        <td>Niger</td>-->
-<!--                      </tr>-->
-<!--                      <tr>-->
-<!--                        <td>2</td>-->
-<!--                        <td>Minerva Hooper</td>-->
-<!--                        <td>$23,789</td>-->
-<!--                        <td>Curaçao</td>-->
-<!--                      </tr>-->
-<!--                      <tr>-->
-<!--                        <td>3</td>-->
-<!--                        <td>Sage Rodriguez</td>-->
-<!--                        <td>$56,142</td>-->
-<!--                        <td>Netherlands</td>-->
-<!--                      </tr>-->
-<!--                      <tr>-->
-<!--                        <td>4</td>-->
-<!--                        <td>Philip Chaney</td>-->
-<!--                        <td>$38,735</td>-->
-<!--                        <td>Korea, South</td>-->
-<!--                      </tr>-->
-<!--                    </tbody>-->
                                         </table>
 
                                       </div>
@@ -746,6 +774,7 @@ The above copyright notice and this permission notice shall be included in all c
       </footer>
     </div>
   </div>
+
   <!--   Core JS Files   -->
   <script src="../../static/assets/dashboard/js/core/jquery.min.js"></script>
   <script src="../../static/assets/dashboard/js/core/popper.min.js"></script>
@@ -1195,19 +1224,87 @@ The above copyright notice and this permission notice shall be included in all c
                             })
                           })
                         </script>
+  <script>
+                          var $table6 = $('#fresh-table6')
+
+                          window.operateEvents = {
+                            'click .remove': function (e, value, row, index) {
+                              $table6.bootstrapTable('remove', {
+                                field: 'id',
+                                values: [row.id]
+                              })
+                            }
+                          }
+
+                          $(function () {
+                            $table6.bootstrapTable({
+                              classes: 'table table-hover table-striped',
+                              toolbar: '.toolbar',
+
+                              search: true,
+                              showRefresh: false,
+                              showToggle: false,
+                              showColumns: false,
+                              pagination: true,
+                              striped: true,
+                              sortable: false,
+                              pageSize: 8,
+                              pageList: [8, 10, 25, 50, 100],
+
+                              formatShowingRows: function (pageFrom, pageTo, totalRows) {
+                                return ''
+                              },
+                              formatRecordsPerPage: function (pageNumber) {
+                                return pageNumber + ' rows visible'
+                              }
+                            })
+                          })
+                        </script>
+
 
       <script>
-
                 var data = {
                   // A labels array that can contain any sort of values
-                  labels: {{labels|safe}},
+                  labels: {{match_creation_labels|safe}},
                   // Our series array that contains series objects or in this case series data arrays
                   series: [
-                        {{results|safe}}
+                        {{match_creation_results|safe}}
                       ]
                 };
-                new Chartist.Line('.ct-chart', data);
-
+                new Chartist.Line('#match_creation_chart', data);
+      </script>
+      <script>
+                var data = {
+                  // A labels array that can contain any sort of values
+                  labels: {{opened_matches_labels|safe}},
+                  // Our series array that contains series objects or in this case series data arrays
+                  series: [
+                        {{opened_matches_results|safe}}
+                      ]
+                };
+                new Chartist.Line('#opened_matches_chart', data);
+      </script>
+      <script>
+            var data = {
+              // A labels array that can contain any sort of values
+              labels: {{ongoing_matches_labels|safe}},
+              // Our series array that contains series objects or in this case series data arrays
+              series: [
+                    {{ongoing_matches_results|safe}}
+                  ]
+            };
+            new Chartist.Line('#ongoing_matches_chart', data);
+      </script>
+      <script>
+            var data = {
+              // A labels array that can contain any sort of values
+              labels: {{finalized_matches_labels|safe}},
+              // Our series array that contains series objects or in this case series data arrays
+              series: [
+                    {{finalized_matches_results|safe}}
+                  ]
+            };
+            new Chartist.Line('#finalized_matches_chart', data);
       </script>
 
 </body>

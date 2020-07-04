@@ -5,8 +5,10 @@ Copyright (c) 2019 - present AppSeed.us
 """
 from flask_login import LoginManager
 from flask_wtf import FlaskForm
-from wtforms import StringField, FileField, PasswordField, IntegerField, SelectField, SubmitField
+from wtforms import StringField, FileField, PasswordField, IntegerField, SelectField
 from wtforms.validators import Email, DataRequired, InputRequired
+from wtforms.fields.html5 import DateField, TelField
+from wtforms_alchemy import PhoneNumberField
 
 login_manager = LoginManager(),
 GAME_CHOICES = [('', "Escolha um jogo:"), ('1', 'FIFA19'), ('2', 'FIFA20'), ('3', 'FIFA21')]
@@ -15,8 +17,7 @@ BET_VALUE_CHOICES = [('', "Escolha um valor de aposta:"), ('1', 5), ('2', 10), (
 RULES_CHOICES = [('', "Escolha uma regra, se quiser:"), ('1', 'REGRA 1'), ('2', 'REGRA 2'), ('3', 'REGRA 3')]
 GAME_MODE_CHOICES = [('', "Escolha um modo de jogo:"), ('1', 'Elencos Online 1'), ('2', 'Ultimate Team')]
 MATCH_RESULT_CHOICES = [('', "Qual foi o Seu Resultado, na partida?"), ('1', 'Vitória'), ('2', 'Derrota'), ('3', 'Empate')]
-
-
+USER_STATUS_CHOICES = [('', 'Escolha uma opção'), ('1', 'Reabilitar'), ('2', 'Bloquear'), ('3', 'Excluir')]
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -35,8 +36,21 @@ class RegisterForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
 
 
-class MatchCreationForm(FlaskForm):
+class EditProfileForm(FlaskForm):
+    first_name = StringField('First_name', validators=[DataRequired()])
+    last_name = StringField('Last_name', validators=[DataRequired()])
+    phone = StringField('phone', validators=[DataRequired()])
+    cpf = StringField('cpf', validators=[DataRequired()])
+    rg = StringField('rg', validators=[DataRequired()])
+    birth_date = StringField('birth_date', validators=[DataRequired()])
+    xbox_gametag = StringField('xbox_gametag')
+    psn_gametag = StringField('psn_gametag')
+    bank_name = StringField('bank_name')
+    bank_account = StringField('bank_account')
+    bank_agency = StringField('bank_agency')
 
+
+class MatchCreationForm(FlaskForm):
     game_name = SelectField('game', choices=GAME_CHOICES, validators=[DataRequired()])
     platform = SelectField('platform', choices=PLATFORM_CHOICES, validators=[DataRequired()])
     bet_value = SelectField('bet_value', choices=BET_VALUE_CHOICES, validators=[DataRequired()])
@@ -62,6 +76,10 @@ class InsertGameTagForm(FlaskForm):
     gametag = StringField('gametag', validators=[DataRequired()])
 
 
+class ChangeUserStatusForm(FlaskForm):
+    user_status = SelectField('user_status', choices=USER_STATUS_CHOICES)
+
+
 def match_winner_form(form, current_match_users):
 
     match_winner_choices = [('', 'Defina o Ganhador!'), ('1', str(current_match_users[0])),
@@ -73,3 +91,6 @@ def match_winner_form(form, current_match_users):
     form = MatchWinnerForm(form)
     returned_list = [form, match_winner_choices]
     return returned_list
+
+
+

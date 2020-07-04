@@ -8,6 +8,7 @@ from __future__ import print_function
 import base64
 import mimetypes
 import smtplib
+from datetime import date
 from email.mime.audio import MIMEAudio
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
@@ -23,8 +24,10 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
 from flask import jsonify
+from sqlalchemy import or_, and_
+
 from gamebet_website.app import db
-from gamebet_website.app.models.models import Match, User
+from gamebet_website.app.models.models import Match, User, SiteFinance
 from PIL import Image
 
 
@@ -51,20 +54,34 @@ def check_results(match_id):
         match_for_check.match_status = match_for_check.match_creator_gametag
         match_for_check.save()
 
+        site_commission = int(match_for_check.bet_value * 2) * 0.1
+
         match_creator_wallet_att = User.query.filter_by(id=match_for_check.match_creator_id).first()
         match_creator_wallet_att.wallet = int(match_creator_wallet_att.wallet) + int(match_for_check.bet_value) * 2 - \
-                                          int(match_for_check.bet_value * 2) * 0.1
+                                          site_commission
         match_creator_wallet_att.save()
+
+        new_commission = SiteFinance(match_id=match_for_check.id, match_bet_value=match_for_check.bet_value,
+                                     match_total_value=match_for_check.bet_value*2, commission_value=site_commission,
+                                     match_winner_user=match_for_check.match_creator_username)
+        new_commission.save()
 
 
     elif match_for_check.match_creator_match_result == 'Derrota' and match_for_check.competitor_match_result == "Vitória":
         match_for_check.match_status = match_for_check.competitor_gametag
         match_for_check.save()
 
+        site_commission = int(match_for_check.bet_value * 2) * 0.1
+
         competitor_wallet_att = User.query.filter_by(id=match_for_check.competitor_id).first()
         competitor_wallet_att.wallet = int(competitor_wallet_att.wallet) + int(match_for_check.bet_value) * 2 - \
-                                       int(match_for_check.bet_value * 2) * 0.1
+                                       site_commission
         competitor_wallet_att.save()
+
+        new_commission = SiteFinance(match_id=match_for_check.id, match_bet_value=match_for_check.bet_value,
+                                     match_total_value=match_for_check.bet_value*2, commission_value=site_commission,
+                                     match_winner_user=match_for_check.match_creator_username)
+        new_commission.save()
 
     else:
         match_for_check.match_status = "Em Análise"
@@ -97,7 +114,6 @@ def save_image(image, image_path, complete_path):
     if not os.path.isdir(image_path):
         print('criando diretorio')
         os.makedirs(image_path)
-
     try:
         print('removendo imagem, se existir')
         os.remove(complete_path)
@@ -111,6 +127,78 @@ def save_image(image, image_path, complete_path):
 def open_image(image_path):
     img = Image.open(image_path)
     img.show()
+
+
+def basic_user_statistics(id):
+    user = User.query.filter_by(id=id).first()
+    actual_user_wallet = user.wallet
+
+    finished_matches = Match.query.filter(or_(Match.match_creator_id == int(id),
+                                              Match.competitor_id == int(id))).filter(
+        and_(Match.match_status != "Procurando", Match.match_status != "Aguardando",
+             Match.match_status != "Em Análise", Match.match_status != "Em Partida")).count()
+
+    opened_matches = Match.query.filter(
+        or_(Match.match_creator_id == int(id), Match.competitor_id == int(id))).filter(
+        or_(Match.match_status == "Em Partida", Match.match_status == "Aguardando")).count()
+    print(finished_matches)
+    print(opened_matches)
+    print('hey')
+    return [actual_user_wallet, finished_matches, opened_matches]
+
+
+def get_matches_data(matches):
+    today = date.today()
+    current_week = today.isocalendar()[1]
+    weeks = list(range(current_week - 11, current_week + 1))
+    match_creation_weeks = []
+    for match in matches:
+        if match.match_creation_date:
+            print(match.match_creation_date)
+            print(type(match.match_creation_date))
+            match_creation_week = match.match_creation_date.isocalendar()[1]
+            match_creation_weeks.append(match_creation_week)
+    match_creation_week_results = []
+    for week in weeks:
+        match_creation_week_results.append(match_creation_weeks.count(week))
+    labels = weeks
+    results = match_creation_week_results
+    return labels, results
+
+
+def site_finance(class_instance):
+    total_commission = 0
+    for commission in class_instance:
+        total_commission += commission.commission_value
+
+    total_commission = f'{total_commission:.2f}'
+    total_commission = str(total_commission)
+    total_commission = total_commission.replace('.', ',')
+    return total_commission
+
+
+def site_seles(class_instance):
+    total_sales = 0
+    for sale in class_instance:
+        total_sales += sale.product_value
+
+    total_sales = f'{total_sales:.2f}'
+    total_sales = str(total_sales)
+    total_sales = total_sales.replace('.', ',')
+    return total_sales
+
+
+def total_money_requests(class_instance):
+    total_requests = 0
+    for money_request in class_instance:
+        total_requests += money_request.value_wanted
+
+    total_requests = f'{total_requests:.2f}'
+    total_requests = str(total_requests)
+    total_requests = total_requests.replace('.', ',')
+    print(total_requests)
+    print('aqqqqui')
+    return total_requests
 
 
 def send_email(path):

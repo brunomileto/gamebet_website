@@ -3,23 +3,195 @@
 {% block title %} Profile Page {% endblock %} 
 
 {% block content %}
-  
-              <h3>
-                Nome Usuário: {{ current_user.user }}
-              </h3>
-              <div class="h6 font-weight-300">
-                  Email: {{ current_user.email }}
-              </div>
+
+
+            <div class="text-center mt-5">
+            <div class="panel-heading">
+              <h3 class="panel-title">Dados do Usuário</h3>
             </div>
-            <div class="mt-5 py-5 border-top text-center">
-              <div class="row justify-content-center">
-                <div class="col-lg-9">
+            <div align="center" class="panel-body">
+                          <div class="row" align="center">
+                            <div class="col-xs-10 col-sm-12 "> <br>
+                            <div class=" col-md-12 col-lg-9 ">
+                              <table class="table table-user-information">
+                                <tbody>
+                                  <tr>
+                                    <td>
+                                         <h6 class="font-weight-bold">
+                                            Nome:
+                                         </h6>
+                                      {% if current_user.first_name is none %}
+                                    <td> </td>
+                                      {% else %}
+                                      <td>{{current_user.first_name}}</td>
+                                      {% endif %}
+                                  </tr>
+                                  <tr>
+                                      <td>
+                                         <h6 class="font-weight-bold">
+                                            Nome de Usuário:
+                                         </h6>
+                                      {% if current_user.user is none %}
+                                    <td> </td>
+                                      {% else %}
+                                      <td>{{current_user.user}}</td>
+                                      {% endif %}
+                                  </tr>
+                                  <tr>
+                                      <td>
+                                         <h6 class="font-weight-bold">
+                                            Email:
+                                         </h6>
+                                      {% if current_user.email is none %}
+                                    <td> </td>
+                                      {% else %}
+                                      <td>{{current_user.email}}</td>
+                                      {% endif %}
+                                  </tr>
+                                  <tr>
+                                      <td>
+                                         <h6 class="font-weight-bold">
+                                            Idade:
+                                         </h6>
+                                      {% if current_user.birth_date is none %}
+                                    <td> </td>
+                                      {% else %}
+                                      <td>{{current_user.birth_date}}</td>
+                                      {% endif %}
+                                  </tr>
+                                  <tr>
+                                      <td>
+                                         <h6 class="font-weight-bold">
+                                            Whatsapp:
+                                         </h6>
+                                      {% if current_user.phone is none %}
+                                    <td> </td>
+                                      {% else %}
+                                      <td>{{current_user.phone}}</td>
+                                      {% endif %}
+                                  </tr>
+                                  <tr>
+                                      <td>
+                                         <h6 class="font-weight-bold">
+                                            RG:
+                                         </h6>
+                                      {% if current_user.rg is none %}
+                                    <td> </td>
+                                      {% else %}
+                                      <td>{{current_user.rg}}</td>
+                                      {% endif %}
+                                  </tr>
+                                  <tr>
+                                      <td>
+                                         <h6 class="font-weight-bold">
+                                            CPF:
+                                         </h6>
+                                      {% if current_user.cpf is none %}
+                                    <td> </td>
+                                      {% else %}
+                                      <td>{{current_user.cpf}}</td>
+                                      {% endif %}
+                                  </tr>
+                                  <tr>
+                                      <td>
+                                         <h6 class="font-weight-bold">
+                                            Xbox Live GameTag:
+                                         </h6>
+                                      {% if current_user.xbox_gametag is none %}
+                                    <td> </td>
+                                      {% else %}
+                                      <td>{{current_user.xbox_gametag}}</td>
+                                      {% endif %}
+                                  </tr>
+                                  <tr>
+                                      <td>
+                                         <h6 class="font-weight-bold">
+                                            PlayStation Network GameTag:
+                                         </h6>
+                                      {% if current_user.psn_gametag is none %}
+                                    <td> </td>
+                                      {% else %}
+                                      <td>{{current_user.psn_gametag}}</td>
+                                      {% endif %}
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                            <div class="text-center mt-5">
+                        <div class="panel-heading">
+                          <h3 class="panel-title">Dados para Retirada</h3>
+                        </div>
+                        <div align="center" class="panel-body">
+                          <div class="row" align="center">
+                            <div class="col-xs-10 col-sm-12"> <br>
+                            <div class=" col-md-12 col-lg-9 ">
+                              <table class="table table-user-information">
+                                <tbody>
+                                  <tr>
+                                      <td>
+                                         <h6 class="font-weight-bold">
+                                            Banco:
+                                         </h6>
+                                    </td>
+                                      {% if current_user.bank_name is none %}
+                                    <td> </td>
+                                      {% else %}
+                                    <td>{{current_user.bank_name}}</td>
+                                      {% endif %}
+                                  </tr>
+                                  <tr>
+                                    <td>
+                                         <h6 class="font-weight-bold">
+                                            Agência:
+                                         </h6>
+                                      {% if current_user.bank_agency is none %}
+                                    <td> </td>
+                                      {% else %}
+                                      <td>{{current_user.bank_agency}}</td>
+                                      {% endif %}
+
+                                  </tr>
+
+                                  <tr>
+                                    <td>
+                                         <h6 class="font-weight-bold">
+                                            Conta:
+                                         </h6>
+                                      {% if current_user.bank_account is none %}
+                                    <td> </td>
+                                      {% else %}
+                                      <td>{{current_user.bank_account}}</td>
+                                      {% endif %}
+                                  </tr>
+
+                                </tbody>
+                              </table>
+                              <a href={{url_for('profile_edit')}} class="btn btn-primary">Editar Dados</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+
+
+
+            </div>
+                            <div class="mt-5 py-5 border-top text-center">
+                              <div class="row justify-content-center">
+                                <div class="col-lg-9">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                                    </div>
+                    </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
     </section>
   </main>
 

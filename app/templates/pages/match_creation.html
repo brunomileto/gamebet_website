@@ -7,9 +7,13 @@
 
 {% block content %}
 
+
   <main>
+
     <section class="section section-shaped section-lg">
+
       <div class="shape shape-style-1 bg-gradient-default">
+
         <span></span>
         <span></span>
         <span></span>
@@ -117,9 +121,43 @@
         </div>
       </div>
     </section>
+
+              <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modal-notification">
+            <div class="modal-dialog modal-danger modal-dialog-centered modal-" role="document">
+              <div class="modal-content bg-gradient-danger">
+                <div class="modal-header">
+                  <h6 class="modal-title" id="modal-title-notification">ATENÇÃO</h6>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="py-3 text-center">
+                    <i class="ni ni-bell-55 ni-3x"></i>
+                    <h4 class="heading mt-4">Você está temporariamente bloqueado</h4>
+                    <p>Você está temporariamente impedido de criar partidas. Entre em contato conosco para maiores informações.</p>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <a href={{url_for('profile')}} class="btn btn-white">Ok, Entendi</a>
+                  <a href={{url_for('profile')}} class="btn btn-link text-white ml-auto" data-dismiss="modal"></a>
+                </div>
+              </div>
+            </div>
+          </div>
   </main>
 
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+
+{% block javascripts %}
+<script type="text/javascript">
+$(window).on('load',function(){
+    var delayMs = 500; // delay in milliseconds
+
+    setTimeout(function(){
+        $('#myModal').modal('show');
+    }, delayMs);
+});
+</script>
+{% endblock javascripts %}

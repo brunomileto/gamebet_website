@@ -41,6 +41,7 @@
   {% include 'includes/navigation.html' %}
 
     <main class="profile-page">
+
     <section class="section-profile-cover section-shaped my-0">
       <!-- Circles background -->
       <div class="shape shape-style-1 shape-primary alpha-4">
@@ -66,11 +67,11 @@
             <div class="row justify-content-center">
               <div class="col-lg-3 order-lg-2">
                 <div class="card-profile-image">
-<!--                  <a href="#">-->
-<!--                    <img src="/static/assets/img/theme/team-4-800x800.jpg" class="rounded-circle" alt="image">-->
-<!--                  </a>-->
+                          <img data-toggle="modal" data-target="#modal-default" src= {{current_user.profile_picture_url}} class="rounded-circle" alt="image">
+<!--                        <input type="file" class="custom-file-input" name="image" id="image" >-->
+<!--                        <img  src= {{current_user.profile_picture_url}} class="rounded-circle" alt="image">-->
                 </div>
-              </div>
+               </div>
               <div class="col-lg-4 order-lg-3 text-lg-right align-self-lg-center">
                 <div class="card-profile-actions py-4 mt-lg-0">
                   <li class="nav-item dropdown">
@@ -97,10 +98,14 @@
               <div class="col-lg-4 order-lg-1">
                 <div class="card-profile-stats d-flex justify-content-center">
                   <div>
-                    <span class="heading">R$ {{user_wallet}},00</span>
+                    <span class="heading">R${{user_wallet}},00</span>
                     <span class="description">Saldo Carteira</span>
                   </div>
                   <div>
+                    <span class="heading">{{total_ongoing}}</span>
+                    <span class="description">Partidas Abertas</span>
+                  </div>
+                                    <div>
                     <span class="heading">{{total_matches}}</span>
                     <span class="description">Partidas Jogadas</span>
                   </div>
@@ -114,10 +119,40 @@
   {% include 'includes/footer-fullscreen.html' %}
  
   {% include 'includes/scripts.html' %}
- 
+
   <!-- Specific Page JS goes HERE  -->
   {% block javascripts %}{% endblock javascripts %}
 
-</body>
+  <!--  MODAL -->
+                         <div class="modal fade" id="modal-default" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
+                            <div class="modal-dialog modal- modal-dialog-centered modal-" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h6 class="modal-title" id="modal-title-default">Upload Nova Imagem de Perfil</h6>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                  </button>
+                                </div>
+                                <form method="post" ENCTYPE="multipart/form-data">
+                                <div class="modal-body">
+                                  <div class="form-group">
+                                    <div class="input-group input-group-alternative mb-3">
+                                      </div>
+                                      <div class="custom-file">
+                                        <input type="file" class="custom-file-input" name="image2" id="image2" >
+                                        <label class="custom-file-label" for="image2">Escolha a imagem</label>
+                                      </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="submit"   class="btn btn-primary">Save changes</button>
+                                  <button type="button" class="btn btn-link  ml-auto" data-dismiss="modal">Close</button>
+                                </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+
+    </body>
 
 </html>

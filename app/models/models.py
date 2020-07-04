@@ -17,16 +17,23 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(500))
     first_name = db.Column(db.String(64))
     last_name = db.Column(db.String(64))
-    phone = db.Column(db.BIGINT)
-    cpf = db.Column(db.BIGINT, unique=True)
-    birth_date = db.Column(db.Date)
-    wallet = db.Column(db.BIGINT)
+    phone = db.Column(db.String(120))
+    cpf = db.Column(db.String(120), unique=True)
+    rg = db.Column(db.String(120), unique=True)
+    birth_date = db.Column(db.String(120))
+    wallet = db.Column(db.Float)
     xbox_gametag = db.Column(db.String(120))
     psn_gametag = db.Column(db.String(120))
+    bank_name = db.Column(db.String(120))
+    bank_account = db.Column(db.String(120), unique=True)
+    bank_agency = db.Column(db.String(120), unique=True)
+    profile_picture_url = db.Column(db.String(120))
+    user_status = db.Column(db.String(120))
     matches = db.relationship('Match', backref='match_creator')
 
-    def __init__(self, user, email, password, first_name, last_name, phone, cpf, birth_date, wallet, xbox_gametag,
-                 psn_gametag):
+    def __init__(self, user, email, password, first_name=None, last_name=None, phone=None, cpf=None, birth_date=None,
+                 wallet=None, xbox_gametag=None, psn_gametag=None, rg=None, bank_name=None, bank_account=None,
+                 bank_agency=None, profile_picture_url=None, user_status=None):
         self.user = user
         self.password = password
         self.email = email
@@ -38,6 +45,12 @@ class User(UserMixin, db.Model):
         self.wallet = wallet
         self.xbox_gametag = xbox_gametag
         self.psn_gametag = psn_gametag
+        self.rg = rg
+        self.bank_name = bank_name
+        self.bank_account = bank_account
+        self.bank_agency = bank_agency
+        self.profile_picture_url = profile_picture_url
+        self.user_status = user_status
 
     def __repr__(self):
         return str(self.id) + ' - ' + str(self.user)
@@ -58,7 +71,7 @@ class Match(UserMixin, db.Model):
     competitor_id = db.Column(db.Integer)
     game_name = db.Column(db.String(120))
     platform = db.Column(db.String(120))
-    bet_value = db.Column(db.Integer)
+    bet_value = db.Column(db.Float)
     match_creator_gametag = db.Column(db.String(120))
     competitor_gametag = db.Column(db.String(120))
     comment = db.Column(db.String(250))
@@ -75,12 +88,13 @@ class Match(UserMixin, db.Model):
     competitor_match_creator_goals = db.Column(db.Integer)
     competitor_competitor_goals = db.Column(db.Integer)
     competitor_print = db.Column(db.String(500))
+    match_creation_date = db.Column(db.Date)
 
     def __init__(self, match_creator_id, competitor_id, game_name, platform, bet_value, match_creator_gametag,
                  competitor_gametag, comment, game_rules, game_mode, match_creator_username, competitor_username,
                  match_status, match_creator_match_result, match_creator_match_creator_goals,
                  match_creator_competitor_goals, match_creator_print, competitor_match_result,
-                 competitor_match_creator_goals, competitor_competitor_goals, competitor_print):
+                 competitor_match_creator_goals, competitor_competitor_goals, competitor_print, match_creation_date):
         self.match_creator_id = match_creator_id
         self.competitor_id = competitor_id
         self.game_name = game_name
@@ -102,6 +116,7 @@ class Match(UserMixin, db.Model):
         self.competitor_match_creator_goals = competitor_match_creator_goals
         self.competitor_competitor_goals = competitor_competitor_goals
         self.competitor_print = competitor_print
+        self.match_creation_date = match_creation_date
 
     def __repr__(self):
         return str(self.id) + ' - ' + str(self.match_creator_username)
@@ -213,6 +228,36 @@ class GetMoney(UserMixin, db.Model):
 
     def __repr__(self):
         return str(self.id) + ' - ' + str(self.user_username)
+
+    def save(self):
+        # inject self into db session
+        db.session.add(self)
+
+        # commit change and save the object
+        db.session.commit()
+
+        return self
+
+
+class SiteFinance(UserMixin, db.Model):
+    __tablename__ = 'site_finance'
+
+    id = db.Column(db.Integer, primary_key=True)
+    match_id = db.Column(db.Integer, unique=True)
+    match_bet_value = db.Column(db.Integer)
+    match_total_value = db.Column(db.Integer)
+    commission_value = db.Column(db.Float)
+    match_winner_user = db.Column(db.String(120))
+
+    def __init__(self, match_id, match_bet_value, match_total_value, commission_value, match_winner_user):
+        self.match_id = match_id
+        self.match_bet_value = match_bet_value
+        self.match_total_value = match_total_value
+        self.commission_value = commission_value
+        self.match_winner_user = match_winner_user
+
+    def __repr__(self):
+        return str(self.id) + ' - ' + str(self.match_winner_user)
 
     def save(self):
         # inject self into db session
