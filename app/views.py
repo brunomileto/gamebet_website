@@ -13,10 +13,11 @@ from brazilnum.cpf import validate_cpf
 from gamebet_website.app import app, lm
 from gamebet_website.app.models.forms import LoginForm, RegisterForm, MatchCreationForm, InsertResults, GAME_CHOICES, \
     PLATFORM_CHOICES, BET_VALUE_CHOICES, RULES_CHOICES, GAME_MODE_CHOICES, MATCH_RESULT_CHOICES, GetMoneyForm, \
-    match_winner_form, InsertGameTagForm, EditProfileForm, ChangeUserStatusForm, USER_STATUS_CHOICES
+    match_winner_form, InsertGameTagForm, EditProfileForm, ChangeUserStatusForm, USER_STATUS_CHOICES, MatchEditForm, \
+    RequestDefinitionForm
 from gamebet_website.app.models.models import User, Match, Product, Sale, GetMoney, SiteFinance
 from gamebet_website.app.util import check_results, save_image, basic_user_statistics, get_matches_data, site_finance, \
-    site_seles, total_money_requests
+    site_sales, total_money_requests, stored_choice, get_finance_data
 from gamebet_website.app.mercadopago import mercadopago
 from gamebet_website.app.configuration import basedir
 
@@ -270,6 +271,7 @@ def match_creation():
                     competitor_print = None
                     match_status = 'Procurando'
                     match_creation_date = date.today()
+                    match_end_date = None
                     match_object = Match(match_creator_id, competitor_id, game_name, platform, bet_value,
                                          match_creator_gametag,
                                          competitor_gametag, comments, rules, game_mode, match_creator_username,
@@ -278,7 +280,7 @@ def match_creation():
                                          match_creator_print,
                                          competitor_match_result, competitor_match_creator_goals,
                                          competitor_competitor_goals,
-                                         competitor_print, match_creation_date)
+                                         competitor_print, match_creation_date, match_end_date)
                     match_object.save()
 
                     matches_list = Match.query.filter_by(id=int(match_object.id)).first()
@@ -548,9 +550,10 @@ def get_money_function():
         if actual_user_wallet > 0:
             order_date = datetime.datetime.now()
             order_status = "Em Análise"
+            order_end_date = None
             new_order_request = GetMoney(user_id=current_user.id, user_username=current_user.user,
                                          value_wanted=money_wanted, order_date=order_date,
-                                         order_status=order_status)
+                                         order_status=order_status, order_end_date=order_end_date)
             new_order_request.save()
             get_orders = GetMoney.query.filter_by(user_id=current_user.id)
             actual_user.wallet = actual_user.wallet - money_wanted
@@ -703,10 +706,6 @@ def admin_dashboard():
                                                     Match.match_status != "Em Partida"))
         all_matches = Match.query.all()
         users_list = User.query.filter(User.user != "Admin").all()
-        finance_data = SiteFinance.query.all()
-        approved_sales = Sale.query.filter_by(collection_status='approved').all()
-        approved_money_requests = GetMoney.query.filter_by(order_status='Aprovado').all()
-
 
         # Call get data functions
         match_creation_chart = get_matches_data(all_matches)
@@ -714,11 +713,11 @@ def admin_dashboard():
         ongoing_matches_chart = get_matches_data(ongoing_matches)
         finalized_matches_chart = get_matches_data(finalized_matches)
 
-        total_commission = site_finance(finance_data)
+        total_opened_matches = opened_matches.count()
+        total_ongoing_matches = ongoing_matches.count()
+        total_finalized_matches = finalized_matches.count()
+        total_matches = Match.query.count()
 
-        total_sales = site_seles(approved_sales)
-
-        money_requests = total_money_requests(approved_money_requests)
 
         if request.method == "POST":
             id = request.form['id']
@@ -735,30 +734,8 @@ def admin_dashboard():
                                opened_matches_results=opened_matches_chart[1],
                                finalized_matches_labels=finalized_matches_chart[0],
                                finalized_matches_results=finalized_matches_chart[1],
-                               total_commission=total_commission, total_sales=total_sales,
-                               total_money_requests=money_requests)
-
-
-@app.route('/admin_dashboard_finance.html')
-def admin_dashboard_finance():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
-    if current_user.user == 'admin':
-        if current_user.password == 'test':
-            return render_template('dashboard/dashboard_finance.html')
-    else:
-        return render_template('pages/error-404.html')
-
-
-@login_required
-@app.route('/dashboard_finance1.html', methods=['GET', 'POST'])
-def dashboard_finance():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
-    elif not current_user.user == 'admin':
-        return render_template('/perfil.html')
-
-    return render_template('dashboard/dashboard_finance.html')
+                               total_opened_matches=total_opened_matches, total_ongoing_matches=total_ongoing_matches,
+                               total_finalized_matches=total_finalized_matches, total_matches=total_matches)
 
 
 @login_required
@@ -783,44 +760,215 @@ def match_winner(id):
 
         if form.validate_on_submit():
             match_winner_analyzed = dict(match_winner_choices).get(form.match_winner.data)
-            current_match.match_status = match_winner_analyzed
+            if match_winner_analyzed == 'Empatar Partida' or match_winner_analyzed == 'Excluir Partida':
+                user_creator = User.query.filter_by(id=current_match.match_creator_id).first()
+                user_competitor = User.query.filter_by(id=current_match.competitor_id).first()
 
-            if current_match.platform == 'XOne':
-                user_winner = User.query.filter_by(xbox_gametag=match_winner_analyzed).first()
+                user_creator.wallet = user_creator.wallet + int(current_match.bet_value)
+                user_competitor.wallet = user_competitor.wallet + int(current_match.bet_value)
 
-                site_commission = int(current_match.bet_value * 2) * 0.1
+                user_creator.save()
+                user_competitor.save()
+                if match_winner_analyzed == 'Empatar Partida':
+                    current_match.match_status = 'Empate'
+                    current_match.match_end_date = date.today()
+                    current_match.save()
+                else:
+                    current_match.match_status = 'Excluída'
+                    current_match.match_end_date = date.today()
+                    current_match.save()
+            elif match_winner_analyzed == "Manter em Análise":
+                current_match.match_status = "Em Análise"
+                current_match.save()
 
-                user_winner.wallet = user_winner.wallet + current_match.bet_value * 2 - site_commission
-                user_winner.save()
+            else:
+                current_match.match_status = match_winner_analyzed
+                current_match.match_end_date = date.today()
+                if current_match.platform == 'XOne':
+                    user_winner = User.query.filter_by(xbox_gametag=match_winner_analyzed).first()
 
-                new_commission = SiteFinance(match_id=current_match.id, match_bet_value=current_match.bet_value,
-                                             match_total_value=current_match.bet_value * 2,
-                                             commission_value=site_commission,
-                                             match_winner_user=current_match.match_creator_username)
-                new_commission.save()
+                    site_commission = int(current_match.bet_value * 2) * 0.1
 
-            elif current_match.platform == 'PS4':
+                    user_winner.wallet = user_winner.wallet + current_match.bet_value * 2 - site_commission
+                    user_winner.save()
 
-                user_winner = User.query.filter_by(psn_gametag=match_winner_analyzed).first()
+                    commission_date = date.today()
+                    new_commission = SiteFinance(match_id=current_match.id, match_bet_value=current_match.bet_value,
+                                                 match_total_value=current_match.bet_value * 2,
+                                                 commission_value=site_commission, commission_date=commission_date,
+                                                 match_winner_user=current_match.match_creator_username)
+                    new_commission.save()
 
-                site_commission = int(current_match.bet_value * 2) * 0.1
+                elif current_match.platform == 'PS4':
 
-                user_winner.wallet = user_winner.wallet + 2 * current_match.bet_value - site_commission
-                user_winner.save()
+                    user_winner = User.query.filter_by(psn_gametag=match_winner_analyzed).first()
 
-                new_commission = SiteFinance(match_id=current_match.id, match_bet_value=current_match.bet_value,
-                                             match_total_value=current_match.bet_value * 2,
-                                             commission_value=site_commission,
-                                             match_winner_user=current_match.match_creator_username)
-                new_commission.save()
+                    site_commission = int(current_match.bet_value * 2) * 0.1
+                    commission_date = date.today()
+                    user_winner.wallet = user_winner.wallet + 2 * current_match.bet_value - site_commission
+                    user_winner.save()
 
-            current_match.save()
+                    new_commission = SiteFinance(match_id=current_match.id, match_bet_value=current_match.bet_value,
+                                                 match_total_value=current_match.bet_value * 2,
+                                                 commission_value=site_commission, commission_date=commission_date,
+                                                 match_winner_user=current_match.match_creator_username)
+                    new_commission.save()
+                current_match.save()
             return redirect(url_for('admin_dashboard'))
         return render_template('dashboard/match_winner.html', form=form, id=id, match_creator_gametag=match_creator,
                                competitor_gametag=competitor, match_creator_print_path=match_creator_print_path,
                                competitor_print_path=competitor_print_path)
 
     return url_for('match_winner', form=form, id=id, match_creator_gametag=match_creator, competitor_gametag=competitor)
+
+
+@app.route('/dashboard_deletar_partida/<int:id>.html', methods=['GET', 'POST'])
+def admin_dashboard_delete_match(id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    elif not current_user.user == 'admin':
+        return render_template('/perfil.html')
+    else:
+        # Data base queries
+        opened_matches = Match.query.filter_by(match_status='Procurando')
+        ongoing_matches = Match.query.filter_by(match_status='Em partida')
+        on_analyzes = Match.query.filter_by(match_status='Em Análise')
+        finalized_matches = Match.query.filter(and_(Match.match_status != "Procurando",
+                                                    Match.match_status != "Aguardando",
+                                                    Match.match_status != "Em Análise",
+                                                    Match.match_status != "Em Partida"))
+        all_matches = Match.query.all()
+        users_list = User.query.filter(User.user != "Admin").all()
+
+        # Call get data functions
+        match_creation_chart = get_matches_data(all_matches)
+        opened_matches_chart = get_matches_data(opened_matches)
+        ongoing_matches_chart = get_matches_data(ongoing_matches)
+        finalized_matches_chart = get_matches_data(finalized_matches)
+
+        total_opened_matches = opened_matches.count()
+        total_ongoing_matches = ongoing_matches.count()
+        total_finalized_matches = finalized_matches.count()
+        total_matches = all_matches.count()
+
+
+        if request.method == "POST":
+            print('REQUEST POST')
+            match = Match.query.filter_by(id=id).first()
+            match.match_status = "Excluída"
+            match.match_end_date = date.today()
+
+            user_creator = User.query.filter_by(id=match.match_creator_id)
+            user_competitor = User.query.filter_by(id=match.competitor_id)
+
+            user_creator.wallet = user_creator.wallet + int(match.bet_value)
+            user_competitor.wallet = user_competitor.wallet + int(match.bet_value)
+
+            user_creator.save()
+            user_competitor.save()
+
+            match.save()
+            return redirect(url_for('admin_dashboard'))
+
+        return render_template('dashboard/dashboard_delete_match.html', match_id=id, opened_matches=opened_matches,
+                               ongoing_matches=ongoing_matches, on_analyzes=on_analyzes, all_matches=all_matches,
+                               finalized_matches=finalized_matches, users_list=users_list,
+                               match_creation_labels=match_creation_chart[0],
+                               match_creation_results=match_creation_chart[1],
+                               ongoing_matches_labels=ongoing_matches_chart[0],
+                               ongoing_matches_results=ongoing_matches_chart[1],
+                               opened_matches_labels=opened_matches_chart[0],
+                               opened_matches_results=opened_matches_chart[1],
+                               finalized_matches_labels=finalized_matches_chart[0],
+                               finalized_matches_results=finalized_matches_chart[1],
+                               total_opened_matches=total_opened_matches, total_ongoing_matches=total_ongoing_matches,
+                               total_finalized_matches=total_finalized_matches, total_matches=total_matches, id=id)
+
+
+
+@app.route('/dashboard_finance.html', methods=['GET', 'POST'])
+def dashboard_finance():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    if current_user.user == 'admin':
+        if current_user.password == 'test':
+            withdraw_requests = GetMoney.query.filter_by(order_status='Em Análise').all()
+            approved_requests = GetMoney.query.filter_by(order_status='Processando').all()
+            all_requests = GetMoney.query.all()
+            finance_data = SiteFinance.query.all()
+            approved_sales = Sale.query.filter_by(collection_status='approved').all()
+            approved_money_requests = GetMoney.query.filter_by(order_status='Aprovado').all()
+
+            finalized_matches = Match.query.filter(and_(Match.match_status != "Procurando",
+                                                        Match.match_status != "Aguardando",
+                                                        Match.match_status != "Em Análise",
+                                                        Match.match_status != "Em Partida"))
+
+            finalized_matches_chart = get_matches_data(finalized_matches)
+
+            all_commissions_chart = get_finance_data(finance_data)
+
+            all_approved_sales_chart = get_finance_data(approved_sales)
+
+            all_approved_requests_chart = get_finance_data(approved_money_requests)
+
+            # Call get data functions
+            # match_creation_chart = get_matches_data(all_matches)
+            # opened_matches_chart = get_matches_data(opened_matches)
+            # ongoing_matches_chart = get_matches_data(ongoing_matches)
+            # finalized_matches_chart = get_matches_data(finalized_matches)
+
+            total_commission = site_finance(finance_data)
+
+            total_sales = site_sales(approved_sales)
+
+            money_requests = total_money_requests(approved_money_requests)
+
+            return render_template('dashboard/dashboard_finance.html', withdraw_requests=withdraw_requests,
+                                   approved_requests=approved_requests, all_requests=all_requests,
+                                   total_commission=total_commission, total_sales=total_sales,
+                                   total_money_requests=money_requests,
+                                   all_commissions_labels=all_commissions_chart[0],
+                                   all_commissions_results=all_commissions_chart[1],
+                                   all_approved_sales_labels=all_approved_sales_chart[0],
+                                   all_approved_sales_results=all_approved_sales_chart[1],
+                                   all_approved_requests_labels=all_approved_requests_chart[0],
+                                   all_approved_requests_results=all_approved_requests_chart[1],
+                                   finalized_matches_labels=finalized_matches_chart[0],
+                                   finalized_matches_results=finalized_matches_chart[1])
+    else:
+        return redirect(url_for('home_page'))
+
+
+@login_required
+@app.route('/definir_solicitação/<int:id>.html', methods=['GET', 'POST'])
+def request_definition(id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    elif not current_user.user == 'admin':
+        return render_template('/perfil.html')
+
+    current_request = GetMoney.query.filter_by(id=id).first()
+    form = RequestDefinitionForm(request.form)
+
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            request_def = dict([('', 'Defina: '), ('1', 'Aceitar'), ('2', 'Recusar')]).get(form.match_winner.data)
+            if request_def == 'Aceitar':
+                current_request.order_status = "Aceita"
+                current_request.order_end_date = date.today()
+                current_request.save()
+
+            elif request_def == "Recusar":
+                current_request.order_status = "Recusada"
+                current_request.save()
+                """
+                TODO: DEVOLVER DINHEIRO PARA CONTA NESTE CASO?
+                """
+            return redirect(url_for('dashboard_finance'))
+        return render_template('dashboard/request_definition.html', form=form, id=id)
+    return url_for('request_definition', form=form, id=id)
+
 
 
 @login_required
@@ -867,28 +1015,34 @@ def edit_matches(id):
     for column in current_match.__table__.columns:
         current_match_data[column.name] = str(getattr(current_match, column.name))
 
-    form = MatchCreationForm(request.form, data=current_match_data)
+    game_name_default_choice = stored_choice(current_match.game_name, GAME_CHOICES)
+    platform_default_choice = stored_choice(current_match.platform, PLATFORM_CHOICES)
+    bet_value_default_choice = stored_choice(current_match.bet_value, BET_VALUE_CHOICES)
+    game_mode_default_choice = stored_choice(current_match.game_mode, GAME_MODE_CHOICES)
+    game_rules_default_choice = stored_choice(current_match.game_rules, RULES_CHOICES)
+
+    form = MatchEditForm(request.form, data=current_match_data, game_name=game_name_default_choice,
+                         platform=platform_default_choice, bet_value=bet_value_default_choice,
+                         game_mode=game_mode_default_choice, game_rules=game_rules_default_choice)
     msg = None
     if form.validate_on_submit():
-        # phone = request.form.get('phone', '', type=str)
-        # xbox_gametag = request.form.get('xbox_gametag', '', type=str)
-        # psn_gametag = request.form.get('psn_gametag', '', type=str)
-        # bank_name = request.form.get('bank_name', '', type=str)
-        # bank_account = request.form.get('bank_account', '', type=str)
-        # bank_agency = request.form.get('bank_agency', '', type=str)
-        #
-        # current_user_db = User.query.filter_by(id=current_user.id).first()
-        #
-        # current_user_db.phone = phone
-        # current_user_db.xbox_gametag = xbox_gametag
-        # current_user_db.psn_gametag = psn_gametag
-        # current_user_db.bank_name = bank_name
-        # current_user_db.bank_account = bank_account
-        # current_user_db.bank_agency = bank_agency
-        #
-        # current_user_db.save()
+        game_name = dict(GAME_CHOICES).get(form.game_name.data)
+        platform = dict(PLATFORM_CHOICES).get(form.platform.data)
+        bet_value = dict(BET_VALUE_CHOICES).get(form.bet_value.data)
+        game_mode = dict(GAME_MODE_CHOICES).get(form.game_mode.data)
+        game_rules = dict(RULES_CHOICES).get(form.game_rules.data)
+        comment = request.form.get('comment', '', type=str)
 
-        return redirect(url_for('profile'))
+        current_match.game_name = game_name
+        current_match.platform = platform
+        current_match.bet_value = bet_value
+        current_match.game_mode = game_mode
+        current_match.game_rules = game_rules
+        current_match.comment = comment
+
+        current_match.save()
+
+        return redirect(url_for('admin_dashboard'))
 
     print(form.errors)
-    return render_template('dashboard/edit_matches.html', form=form, msg=msg)
+    return render_template('dashboard/edit_matches.html', form=form, msg=msg, id=id)

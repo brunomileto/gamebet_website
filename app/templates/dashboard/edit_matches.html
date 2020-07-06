@@ -48,66 +48,38 @@
                   </small>
                 </div>
 
-                <h4 class="mb-3">Informações Pessoais</h4>
+                <h4 class="mb-3">Editar Partida {{id}}</h4>
                   <form class="form" method="post" enctype="multipart/form-data" action="">
                     {{ form.hidden_tag() }}
                       <div class="row">
                           <div class="col-md-6 mb-3">
                             <label>Nome Jogo</label>
-                            {{ form.game_name(class="form-control") }}
+                            {{ form.game_name(class="form-control", id="game_name") }}
                           </div>
                           <div class="col-md-6 mb-3">
                             <label>Plataforma</label>
-                            {{ form.platform(class="form-control") }}
+                            {{ form.platform(class="form-control", id="platform") }}
                           </div>
                         </div>
                         <div class="row">
                           <div class="col-md-6 mb-3">
                             <label>Valor Aposta</label>
-                            {{ form.bet_value(class="form-control", id="date") }}
+                            {{ form.bet_value(class="form-control", id="bet_value") }}
                           </div>
                           <div class="col-md-6 mb-3">
-                            <label>GameTag Criador Partida</label>
-                            {{ form.match_creator_gametag(class="form-control", id="phone") }}
-                          </div>
-                        </div>
-                         <div class="row">
-                          <div class="col-md-6 mb-3">
-                            <label>GameTag Competidor</label>
-                            {{ form.competitor_gametag(class="form-control") }}
-                          </div>
-                          <div class="col-md-6 mb-3">
-                            <label>Modo Jogo</label>
-                            {{ form.game_mode(class="form-control", id="cpf") }}
+                            <label>Modo de Jogo</label>
+                            {{ form.game_mode(class="form-control", id="game_mode") }}
                           </div>
                         </div>
                         <div class="row">
                           <div class="col-md-6 mb-3">
-                            <label>XBox Live</label>
-                            {{ form.xbox_gametag(class="form-control") }}
+                            <label>Regras</label>
+                            {{ form.game_rules(class="form-control", id="game_rules") }}
                           </div>
                           <div class="col-md-6 mb-3">
-                            <label>Play Station Network</label>
-                            {{ form.psn_gametag(class="form-control") }}
+                            <label>Comentários</label>
+                            {{ form.comment(class="form-control", id="comments") }}
                           </div>
-                        </div>
-
-                         <h4 class="mb-3">Dados Bancários</h4>
-                        <div class="mb-3">
-                            <label>Banco</label>
-                            {{ form.bank_name(class="form-control") }}
-                          <div class="invalid-feedback">
-                            Please enter a valid email address for shipping updates.
-                          </div>
-                        </div>
-
-                        <div class="mb-3">
-                          <label>Conta Corrente - somente números</label>
-                            {{ form.bank_account(class="form-control") }}
-                        </div>
-                        <div class="mb-3">
-                          <label>Agência - somente números</label>
-                            {{ form.bank_agency(class="form-control") }}
                         </div>
                           <div class="form-group">
                           <div class="text-center">
@@ -117,7 +89,6 @@
                             <a href= {{url_for('profile')}} class="btn btn-primary mt-4">Voltar</a>
                           </div>
                           </div>
-
                         </form>
                       </div>
                     </div>

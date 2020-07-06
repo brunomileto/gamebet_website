@@ -60,6 +60,15 @@ class MatchCreationForm(FlaskForm):
     game_mode = SelectField('game_mode', choices=GAME_MODE_CHOICES, validators=[DataRequired()])
 
 
+class MatchEditForm(FlaskForm):
+    game_name = SelectField('game_name', choices=GAME_CHOICES, validators=[DataRequired()])
+    platform = SelectField('platform', choices=PLATFORM_CHOICES, validators=[DataRequired()])
+    bet_value = SelectField('bet_value', choices=BET_VALUE_CHOICES, validators=[DataRequired()])
+    game_rules = SelectField('game_rules', choices=RULES_CHOICES)
+    comment = StringField('comment')
+    game_mode = SelectField('game_mode', choices=GAME_MODE_CHOICES, validators=[DataRequired()])
+
+
 class InsertResults(FlaskForm):
     # match_result = StringField('match_result', validators=[DataRequired()])
     match_result = SelectField('match_result', choices=MATCH_RESULT_CHOICES, validators=[DataRequired()])
@@ -82,8 +91,9 @@ class ChangeUserStatusForm(FlaskForm):
 
 def match_winner_form(form, current_match_users):
 
-    match_winner_choices = [('', 'Defina o Ganhador!'), ('1', str(current_match_users[0])),
-                            ('2', str(current_match_users[1]))]
+    match_winner_choices = [('', 'Escolha a GameTag do Ganhador ou o Status da Partida!'), ('1', str(current_match_users[0])),
+                            ('2', str(current_match_users[1])), ('3', 'Empatar'), ('4', 'Excluir'),
+                            ('5', 'Manter em Análise')]
 
     class MatchWinnerForm(FlaskForm):
         match_winner = SelectField('match_winner', choices=match_winner_choices, validators=[DataRequired()])
@@ -93,4 +103,6 @@ def match_winner_form(form, current_match_users):
     return returned_list
 
 
+class RequestDefinitionForm(FlaskForm):
+    request_definition = SelectField('request_definition', choices=[('', 'Defina: '), ('1', 'Aceitar'), ('2', 'Recusar')], validators=[DataRequired()])
 

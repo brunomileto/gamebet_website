@@ -89,12 +89,14 @@ class Match(UserMixin, db.Model):
     competitor_competitor_goals = db.Column(db.Integer)
     competitor_print = db.Column(db.String(500))
     match_creation_date = db.Column(db.Date)
+    match_end_date = db.Column(db.Date)
 
     def __init__(self, match_creator_id, competitor_id, game_name, platform, bet_value, match_creator_gametag,
                  competitor_gametag, comment, game_rules, game_mode, match_creator_username, competitor_username,
                  match_status, match_creator_match_result, match_creator_match_creator_goals,
                  match_creator_competitor_goals, match_creator_print, competitor_match_result,
-                 competitor_match_creator_goals, competitor_competitor_goals, competitor_print, match_creation_date):
+                 competitor_match_creator_goals, competitor_competitor_goals, competitor_print, match_creation_date,
+                 match_end_date):
         self.match_creator_id = match_creator_id
         self.competitor_id = competitor_id
         self.game_name = game_name
@@ -117,6 +119,7 @@ class Match(UserMixin, db.Model):
         self.competitor_competitor_goals = competitor_competitor_goals
         self.competitor_print = competitor_print
         self.match_creation_date = match_creation_date
+        self.match_end_date = match_end_date
 
     def __repr__(self):
         return str(self.id) + ' - ' + str(self.match_creator_username)
@@ -218,13 +221,15 @@ class GetMoney(UserMixin, db.Model):
     value_wanted = db.Column(db.BIGINT)
     order_date = db.Column(db.DateTime)
     order_status = db.Column(db.String(120))
+    order_end_date = db.Column(db.Date)
 
-    def __init__(self, user_id, user_username, value_wanted, order_date, order_status):
+    def __init__(self, user_id, user_username, value_wanted, order_date, order_status, order_end_date):
         self.user_id = user_id
         self.user_username = user_username
         self.value_wanted = value_wanted
         self.order_date = order_date
         self.order_status = order_status
+        self.order_end_date = order_end_date
 
     def __repr__(self):
         return str(self.id) + ' - ' + str(self.user_username)
@@ -248,13 +253,16 @@ class SiteFinance(UserMixin, db.Model):
     match_total_value = db.Column(db.Integer)
     commission_value = db.Column(db.Float)
     match_winner_user = db.Column(db.String(120))
+    commission_date = db.Column(db.Date)
 
-    def __init__(self, match_id, match_bet_value, match_total_value, commission_value, match_winner_user):
+    def __init__(self, match_id, match_bet_value, match_total_value, commission_value, match_winner_user,
+                 commission_date):
         self.match_id = match_id
         self.match_bet_value = match_bet_value
         self.match_total_value = match_total_value
         self.commission_value = commission_value
         self.match_winner_user = match_winner_user
+        self.commission_date = commission_date
 
     def __repr__(self):
         return str(self.id) + ' - ' + str(self.match_winner_user)

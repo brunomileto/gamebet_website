@@ -36,6 +36,7 @@ def check_results(match_id):
 
     if match_for_check.match_creator_match_result == 'Empate' and match_for_check.competitor_match_result == "Empate":
         match_for_check.match_status = 'Empate'
+        match_for_check.match_end_date = date.today()
         match_for_check.save()
 
         match_creator_wallet_att = User.query.filter_by(id=match_for_check.match_creator_id).first()
@@ -52,6 +53,7 @@ def check_results(match_id):
 
     if match_for_check.match_creator_match_result == 'Vitória' and match_for_check.competitor_match_result == "Derrota":
         match_for_check.match_status = match_for_check.match_creator_gametag
+        match_for_check.match_end_date = date.today()
         match_for_check.save()
 
         site_commission = int(match_for_check.bet_value * 2) * 0.1
@@ -60,15 +62,16 @@ def check_results(match_id):
         match_creator_wallet_att.wallet = int(match_creator_wallet_att.wallet) + int(match_for_check.bet_value) * 2 - \
                                           site_commission
         match_creator_wallet_att.save()
-
+        commission_date = date.today()
         new_commission = SiteFinance(match_id=match_for_check.id, match_bet_value=match_for_check.bet_value,
                                      match_total_value=match_for_check.bet_value*2, commission_value=site_commission,
-                                     match_winner_user=match_for_check.match_creator_username)
+                                     match_winner_user=match_for_check.match_creator_username,
+                                     commission_date=commission_date)
         new_commission.save()
-
 
     elif match_for_check.match_creator_match_result == 'Derrota' and match_for_check.competitor_match_result == "Vitória":
         match_for_check.match_status = match_for_check.competitor_gametag
+        match_for_check.match_end_date = date.today()
         match_for_check.save()
 
         site_commission = int(match_for_check.bet_value * 2) * 0.1
@@ -77,10 +80,11 @@ def check_results(match_id):
         competitor_wallet_att.wallet = int(competitor_wallet_att.wallet) + int(match_for_check.bet_value) * 2 - \
                                        site_commission
         competitor_wallet_att.save()
-
+        commission_date = date.today()
         new_commission = SiteFinance(match_id=match_for_check.id, match_bet_value=match_for_check.bet_value,
                                      match_total_value=match_for_check.bet_value*2, commission_value=site_commission,
-                                     match_winner_user=match_for_check.match_creator_username)
+                                     match_winner_user=match_for_check.match_creator_username,
+                                     commission_date=commission_date)
         new_commission.save()
 
     else:
@@ -166,6 +170,38 @@ def get_matches_data(matches):
     return labels, results
 
 
+def get_finance_data(datas):
+    today = date.today()
+    current_week = today.isocalendar()[1]
+    weeks = list(range(current_week - 11, current_week + 1))
+    datas_weeks = []
+    for data in datas:
+        try:
+            if data.commission_date:
+                print(data.commission_date)
+                data_week = data.commission_date.isocalendar()[1]
+                datas_weeks.append(data_week)
+        except:
+            try:
+                if data.sale_date:
+                    print(data.sale_date.date())
+                    data_week = data.sale_date.isocalendar()[1]
+                    datas_weeks.append(data_week)
+            except:
+                if data.order_end_date:
+                    print(data.order_end_date)
+                    data_week = data.order_end_date.isocalendar()[1]
+                    datas_weeks.append(data_week)
+
+    data_week_results = []
+    for week in weeks:
+        data_week_results.append(datas_weeks.count(week))
+    labels = weeks
+    print(labels)
+    results = data_week_results
+    return labels, results
+
+
 def site_finance(class_instance):
     total_commission = 0
     for commission in class_instance:
@@ -177,7 +213,7 @@ def site_finance(class_instance):
     return total_commission
 
 
-def site_seles(class_instance):
+def site_sales(class_instance):
     total_sales = 0
     for sale in class_instance:
         total_sales += sale.product_value
@@ -199,6 +235,13 @@ def total_money_requests(class_instance):
     print(total_requests)
     print('aqqqqui')
     return total_requests
+
+
+def stored_choice(choice, choice_list):
+    for i in range(len(choice_list)):
+        if choice in choice_list[i]:
+            choice_default = i
+            return choice_default
 
 
 def send_email(path):
